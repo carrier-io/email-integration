@@ -24,7 +24,7 @@
                                 {% if i.is_default %} selected data-is_default="true"{% endif %}
                                 title="{{ i.description }} {% if i.is_default %} - default {% endif %}"
                         >
-                            {{ i.id }} - {{ i.description }} {% if i.is_default %} -default {% endif %}
+                            {{ i.description }} {% if i.is_default %} - default {% endif %}
                         </option>
                     {% endfor %}
                 </select>

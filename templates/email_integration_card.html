@@ -4,7 +4,7 @@
     </div>
     <div class="col-7 d-flex flex-column justify-content-center">
         <div class="row text-uppercase">
-            <h13>id: {{ config['id'] }} {% if config['is_default'] %} default {% endif %}</h13>
+            <h13>{% if config['is_default'] %}default{% endif %}</h13>
         </div>
         <div class="row text-uppercase font-weight-bold">
             Email

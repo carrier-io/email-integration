@@ -10,6 +10,7 @@ def make_dusty_config(context, test_params, scanner_params):
     integration = context.rpc_manager.call.integrations_get_by_id(scanner_params['id'])
 
     result = integration.settings
+    result['recipients'] = scanner_params['recipients']
     #
     log.info("Result: %s", result)
     #
