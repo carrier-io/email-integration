@@ -115,7 +115,6 @@ const emailApp = Vue.createApp({
         test_connection() {
             console.log('TEST CONN', this.$data)
             this.is_fetching = true
-            $('#qualys_test_connection').removeClass('btn-success').addClass('btn-secondary')
             fetch(this.apiPath + 'check_settings', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
