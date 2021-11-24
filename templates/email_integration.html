@@ -1,6 +1,8 @@
-<link rel="stylesheet" type="text/css" href="{{ url_for('reporter_email.static', filename='css/reporter_email_integration.css') }}"/>
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('reporter_email.static', filename='css/reporter_email_integration.css') }}"/>
 
 {% set name = "reporter_email" %}
+
 <button type="button"
         class="btn-action btn-lg btn-secondary card card-row-1 mr-3 ml-3 flex-row align-items-center p-2"
         data-toggle="modal"
@@ -11,7 +13,8 @@
     <div class="col-3"><i class="fa fa-envelope fa-2x"></i></div>
     <div class="col">Email</div>
 </button>
-<div class="modal fixed-left fade shadow-sm" tabindex="-1" role="dialog" id="{{ name }}_integration">
+
+<div class="modal modal-small fixed-left fade shadow-sm" tabindex="-1" role="dialog" id="{{ name }}_integration">
     <div class="modal-dialog modal-dialog-aside" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -77,26 +80,19 @@
                             <p>
                                 <h13>Optional. If not set default template will be used</h13>
                             </p>
-                            {#<div class="row m-b-1">#}
-                            {#    <div class="col-sm-6 offset-sm-3">#}
                             <div class="form-group">
-{#                                <button type="button" class="btn btn-primary btn-block"#}
-{#                                        onclick="$(this).next('input[type=file]').click()"#}
-{#                                >#}
-{#                                    Upload .html#}
-{#                                </button>#}
                                 <input type="file" accept="text/html" class="form-control form-control-alternative"
                                        @change="handleFileUpload"
                                        :class="{ 'is-invalid': error.template }"
                                 >
                                 <div class="invalid-feedback">[[ error.template ]]</div>
                                 <p v-if="base64DisplayValue">
-                                <h13>[[ fileName ]] preview:</h13>
-                            </p>
-                            <textarea class="form-control" rows="3" disabled readonly
-                                      v-if="base64DisplayValue"
-                                      :value="base64DisplayValue"
-                            >
+                                    <h13>[[ fileName ]] preview:</h13>
+                                </p>
+                                <textarea class="form-control" rows="3" disabled readonly
+                                          v-if="base64DisplayValue"
+                                          :value="base64DisplayValue"
+                                >
                             </textarea>
                             </div>
 
@@ -104,7 +100,7 @@
 
                         <div class="form-group">
                             <h9>Description</h9>
-                            <textarea class="form-control" rows="3" placeholder="Optional"
+                            <textarea class="form-control" rows="1" placeholder="Optional"
                                       v-model="description">
                             </textarea>
                         </div>
