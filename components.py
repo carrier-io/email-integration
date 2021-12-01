@@ -1,7 +1,12 @@
+import base64
+
 from flask import render_template
+
+from plugins.reporter_email.models.integration_pd import IntegrationModel
 
 
 def render_integration_create_modal(context, slot, payload):
+    payload['default_template'] = base64.b64decode(IntegrationModel._default_template).decode('utf-8')
     return render_template(
         'email_integration.html',
         config=payload
