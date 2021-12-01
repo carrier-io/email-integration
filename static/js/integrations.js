@@ -8,24 +8,25 @@ const Email = {
     delete: id => {
         emailVm.load({id})
         emailVm.delete()
-    }
+    },
+    defaultTemplate: '',
+    initialState: () => ({
+        host: '',
+        port: null,
+        user: '',
+        password: '',
+        sender: '',
+        description: '',
+        is_default: false,
+        is_fetching: false,
+        error: {},
+        test_connection_status: 0,
+        id: null,
+        template: Email.defaultTemplate,
+        fileName: ''
+    })
 }
 
-const emailInitialState = () => ({
-    host: '',
-    port: null,
-    user: '',
-    password: '',
-    sender: '',
-    description: '',
-    is_default: false,
-    is_fetching: false,
-    error: {},
-    test_connection_status: 0,
-    id: null,
-    template: '',
-    fileName: ''
-})
 
 const emailApp = Vue.createApp({
     delimiters: ['[[', ']]'],
@@ -39,11 +40,10 @@ const emailApp = Vue.createApp({
         return {
             pluginName: 'reporter_email',
             modal: $('#reporter_email_integration'),
-            ...emailInitialState()
+            ...Email.initialState()
         }
     },
     mounted() {
-        console.log('mounted', this.$el)
         this.modal.on('hidden.bs.modal', e => {
             this.clear()
         })
@@ -56,7 +56,17 @@ const emailApp = Vue.createApp({
             return getSelectedProjectId()
         },
         body_data() {
-            const {host, port, user, password: passwd, sender, description, is_default, project_id, template} = this
+            const {
+                host,
+                port,
+                user,
+                password: passwd,
+                sender,
+                description,
+                is_default,
+                project_id,
+                base64Template: template
+            } = this
             return {host, port, user, passwd, sender, description, is_default, project_id, template}
         },
         test_connection_class() {
@@ -68,20 +78,8 @@ const emailApp = Vue.createApp({
                 return 'btn-secondary'
             }
         },
-        base64DisplayValue() {
-            console.log('TTTTT', this.template)
-            if (this.template === '') return ''
-            const data = this.template.split('data:text/html;base64,')[1]
-            try {
-                return atob(data)
-            } catch (e) {
-                console.error(e)
-                this.error.template = 'Only files of data:text/html;base64 are supported'
-                this.template = ''
-                this.fileName = ''
-                return ''
-            }
-
+        base64Template() {
+            return btoa(this.template)
         }
     },
     watch: {
@@ -92,28 +90,19 @@ const emailApp = Vue.createApp({
         }
     },
     methods: {
-        handleFileUpload(event) {
-            const input = event.target
-            if (input.files && input.files[0]) {
-                let reader = new FileReader()
-                reader.onload = (e) => {
-                    delete this.error.template
-                    this.template = e.target.result
-                    this.fileName = input.files[0].name
-                    // input.setAttribute("data-title", fileName)
-                    // console.log(e.target.result)
-                }
-                reader.onerror = (e) => {
-                    this.error.template = 'error reading file'
-                    this.template = ''
-                    this.fileName = ''
-                }
-                reader.readAsDataURL(input.files[0])
+        loadBase64(b64text) {
+            if (b64text === '') return ''
+            try {
+                return atob(b64text)
+            } catch (e) {
+                console.error(e)
+                this.error.template = 'Only files of data:text/html;base64 are supported'
+                this.template = ''
+                this.fileName = ''
+                return ''
             }
-
         },
         test_connection() {
-            console.log('TEST CONN', this.$data)
             this.is_fetching = true
             fetch(this.apiPath + 'check_settings', {
                 method: 'POST',
@@ -131,7 +120,7 @@ const emailApp = Vue.createApp({
         clear() {
             Object.assign(this.$data, {
                 ...this.$data,
-                ...emailInitialState(),
+                ...Email.initialState(),
             })
         },
         load(stateData) {
@@ -140,6 +129,7 @@ const emailApp = Vue.createApp({
                 ...stateData,
                 pluginName: 'reporter_email',
                 modal: $('#reporter_email_integration'),
+                template: this.loadBase64(stateData.template)
             })
         },
         create() {
@@ -149,7 +139,6 @@ const emailApp = Vue.createApp({
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(this.body_data)
             }).then(response => {
-                console.log(response)
                 this.is_fetching = false
                 if (response.ok) {
                     this.modal.modal('hide')
@@ -175,17 +164,14 @@ const emailApp = Vue.createApp({
             } catch (e) {
                 alertMain.add(e, 'danger-overlay')
             }
-
         },
         update() {
-            console.log('update')
             this.is_fetching = true
             fetch(this.apiPath + this.id, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(this.body_data)
             }).then(response => {
-                console.log(response)
                 this.is_fetching = false
                 if (response.ok) {
                     this.modal.modal('hide')
@@ -198,12 +184,10 @@ const emailApp = Vue.createApp({
             })
         },
         delete() {
-            console.log('deleteIntegration')
             this.is_fetching = true
             fetch(this.apiPath + this.id, {
                 method: 'DELETE',
             }).then(response => {
-                console.log(response)
                 this.is_fetching = false
                 if (response.ok) {
                     location.reload()
@@ -214,10 +198,35 @@ const emailApp = Vue.createApp({
                     alertMain.add(`Deletion error. <button class="btn btn-primary" @click="modal.modal('show')">Open modal<button>`)
                 }
             })
-        }
+        },
+        handleFileUpload(file) {
+            let reader = new FileReader()
+            reader.onload = (evt) => {
+                this.template = this.loadBase64(evt.target.result.split('data:text/html;base64,')[1])
+            }
+            reader.onerror = (e) => {
+                this.error.template = 'error reading file'
+                this.template = ''
+                this.fileName = ''
+            }
+            delete this.error.template
+            this.fileName = file.name
+            reader.readAsDataURL(file)
+        },
+        handleDrop(e) {
+            const file = e.dataTransfer.files[0]
+            file && this.handleFileUpload(file)
+        },
+        handleInputFile(event) {
+            const input = event.target
+            if (input.files && input.files[0]) {
+                this.handleFileUpload(input.files[0])
+            }
+        },
     }
 
 })
+
 emailApp.config.compilerOptions.isCustomElement = tag => ['h9', 'h13'].includes(tag)
 
 const emailVm = emailApp.mount('#reporter_email_integration')
@@ -225,10 +234,10 @@ const emailVm = emailApp.mount('#reporter_email_integration')
 $(document).ready(() => {
     $('#reporter_email_integration').on('dragover', (e) => {
         e.preventDefault()
-        $('#reporter_email_integration input[type=file]').css({'height': '300px'})
+        $('#reporter_email_template_area').css({'height': '300px', 'border': '2px dashed var(--basic)'})
     })
     $('#reporter_email_integration').on('drop', (e) => {
-        !(e.target.tagName.toLowerCase() === 'input' && e.target.type === 'file') && e.preventDefault()
-        $('#reporter_email_integration input[type=file]').css({'height': '100px'})
+        e.preventDefault()
+        $('#reporter_email_template_area').css({'height': '100px', 'border': ''})
     })
 })
