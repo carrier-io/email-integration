@@ -132,7 +132,7 @@
     </div>
 </div>
 
-<script src="{{ url_for(name + '.static', filename='js/integrations.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('%s.static' | format(name), filename='js/integrations.js') }}" type="text/javascript"></script>
 <script>
     $(document).ready(() => {
         Email.defaultTemplate = "{{ config['default_template'] | safe }}"

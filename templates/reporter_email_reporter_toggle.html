@@ -74,4 +74,4 @@
 </div>
 
 
-<script src="{{ url_for('reporter_email.static', filename='js/reporter_toggle.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('%s.static' | format(name), filename='js/reporter_toggle.js') }}" type="text/javascript"></script>
