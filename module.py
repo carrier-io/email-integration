@@ -33,33 +33,20 @@ from ..shared.utils.api_utils import add_resource_to_api
 class Module(module.ModuleModel):
     """ Task module """
 
-    def __init__(self, settings, root_path, context):
-        self.settings = settings
-        self.root_path = root_path
+    def __init__(self, context, descriptor):
         self.context = context
+        self.descriptor = descriptor
 
     def init(self):
         """ Init module """
         log.info("Initializing module Reporter Email")
-        NAME = 'reporter_email'
         SECTION_NAME = 'reporters'
 
-        bp = flask.Blueprint(
-            NAME, f'plugins.{NAME}.plugin',
-            static_folder=str(Path(__file__).parents[0] / 'static'),
-            static_url_path=f'/{NAME}/static/'
-        )
-        bp.jinja_loader = jinja2.ChoiceLoader([
-            jinja2.loaders.PackageLoader(f'plugins.{NAME}', 'templates'),
-        ])
-
-        # Register in app
-        self.context.app.register_blueprint(bp)
+        self.descriptor.init_blueprint()
 
         # Register template slot callback
-        self.context.slot_manager.register_callback(f"integration_card_{NAME}", render_integration_card)
+        self.context.slot_manager.register_callback(f"integration_card_{self.descriptor.name}", render_integration_card)
         self.context.slot_manager.register_callback(f"security_{SECTION_NAME}", render_reporter_toggle)
-
 
         self.context.rpc_manager.call.integrations_register_section(
             name=SECTION_NAME,
@@ -69,7 +56,7 @@ class Module(module.ModuleModel):
         )
 
         self.context.rpc_manager.call.integrations_register(
-            name=NAME,
+            name=self.descriptor.name,
             section=SECTION_NAME,
             settings_model=IntegrationModel,
             integration_callback=render_integration_create_modal
@@ -77,9 +64,8 @@ class Module(module.ModuleModel):
 
         self.context.rpc_manager.register_function(
             partial(make_dusty_config, self.context),
-            name=f'dusty_config_{NAME}',
+            name=f'dusty_config_{self.descriptor.name}',
         )
-
 
     def deinit(self):  # pylint: disable=R0201
         """ De-init module """
