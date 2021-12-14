@@ -17,17 +17,13 @@
 
 """ Module """
 from functools import partial
-from pathlib import Path
 
-import flask
-import jinja2
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 from .components import render_integration_create_modal, render_integration_card, render_reporter_toggle
 from .models.integration_pd import IntegrationModel
 from .rpc_worker import make_dusty_config
-from ..shared.utils.api_utils import add_resource_to_api
 
 
 class Module(module.ModuleModel):
@@ -39,7 +35,7 @@ class Module(module.ModuleModel):
 
     def init(self):
         """ Init module """
-        log.info("Initializing module Reporter Email")
+        log.info(f'Initializing module {self.descriptor.name}')
         SECTION_NAME = 'reporters'
 
         self.descriptor.init_blueprint()
@@ -69,4 +65,4 @@ class Module(module.ModuleModel):
 
     def deinit(self):  # pylint: disable=R0201
         """ De-init module """
-        log.info("De-initializing Reporter Email")
+        log.info(f'De-initializing {self.descriptor.name}')
