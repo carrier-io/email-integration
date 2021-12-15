@@ -20,13 +20,13 @@ def render_integration_card(context, slot, payload):
     )
 
 
-def render_reporter_toggle(context, slot, payload):
+def render_test_toggle(context, slot, payload):
     integrations = context.rpc_manager.call.integrations_get_project_integrations_by_name(
         payload['id'],
         'reporter_email'
     )
     payload['project_integrations'] = integrations
     return render_template(
-        'reporter_email:reporter_email_reporter_toggle.html',
+        'reporter_email:reporter_email_test_toggle.html',
         config=payload
     )
