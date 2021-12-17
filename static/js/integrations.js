@@ -14,7 +14,7 @@ const Email = {
         host: '',
         port: null,
         user: '',
-        password: '',
+        passwd: '',
         sender: '',
         description: '',
         is_default: false,
@@ -30,12 +30,6 @@ const Email = {
 
 const emailApp = Vue.createApp({
     delimiters: ['[[', ']]'],
-    // props: [
-    //     'host', 'port', 'user',
-    //     'password', 'sender', 'description',
-    //     'is_default', 'is_fetching', 'error',
-    //     'test_connection_status', 'id'
-    // ],
     data() {
         return {
             pluginName: 'reporter_email',
@@ -60,7 +54,7 @@ const emailApp = Vue.createApp({
                 host,
                 port,
                 user,
-                password: passwd,
+                passwd,
                 sender,
                 description,
                 is_default,
