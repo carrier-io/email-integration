@@ -105,7 +105,7 @@ emailApp.component('recipient', {
     `,
     methods: {
         remove() {
-            console.log('Emitting removeal', this.index)
+            console.log('Emitting removal', this.index)
             this.$emit('remove', this.index)
         }
     }

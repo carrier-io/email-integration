@@ -1,8 +1,8 @@
 import binascii
 from smtplib import SMTP
-from typing import Optional
+from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from pydantic.class_validators import validator
 from pydantic.fields import ModelField
 from pylon.core.tools import log
@@ -42,3 +42,8 @@ class IntegrationModel(BaseModel):
             return value
         else:
             return field.default
+
+
+class SecurityTestModel(BaseModel):
+    id: int
+    recipients: List[EmailStr]
