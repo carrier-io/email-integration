@@ -18,59 +18,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="collapse col-12 mb-3 pl-0" id="selector_{{ integration_name }}">
-                <select class="selectpicker" data-style="btn-secondary">
-                    {% for i in config['project_integrations'] %}
-                        <option
-                                value="{{ i.id }}"
-                                {% if i.is_default %} selected data-is_default="true"{% endif %}
-                                title="{{ i.description }} {% if i.is_default %} - default {% endif %}"
-                        >
-                            {{ i.description }} {% if i.is_default %} - default {% endif %}
-                        </option>
-                    {% endfor %}
-                </select>
-                <div class="mt-3">
-                    <h9>Recipients</h9>
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Recipients' emails comma-separated"
-                               v-model="email"
-                               :class="{ 'is-invalid': hasErrors }"
-                        >
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary btn-37" type="button"
-                                    style="max-width: unset"
-                                    @click="handleAdd"
-                                    :disabled="email === ''"
-                                    :class="{ 'btn-danger': hasErrors }"
-                            >
-                                Add
-                            </button>
-                        </div>
+{#            <script>#}
+{#                console.log(#}
+{#                    `{{ config['project_integrations'] | list_pd_to_json | safe }}`#}
+{#                )#}
+{#            </script>#}
+            <reporter-email
+                @register="register"
+                instance_name="{{ integration_name }}"
 
-                    </div>
-                    <div class="invalid-feedback"
-                         style="display: block"
-                         v-if="hasErrors"
-                    >
-                        <div v-for="error in errors">
-                            [[ error ]]
-                        </div>
-                        <div v-for="warning in warnings" class="text-warning">
-                            [[ warning ]]
-                        </div>
-                    </div>
-                    <ul class="list-group mt-1 list-group-flush">
-                        <recipient
-                                v-for="(item, index) in recipients"
-                                :key="index"
-                                :index="index"
-                                :email="item"
-                                @remove="removeIndex"
-                        ></recipient>
-                    </ul>
-                </div>
-            </div>
+                integration_name="{{ integration_name }}"
+{#                project_integrations="{{ pydantic_list_to_json(config['project_integrations']) }}"#}
+{#                project_integrations="{{ config['project_integrations'] | map(attribute='json') | list }}"#}
+
+{#                :project_integrations="{{ config['project_integrations'] | list_pd_to_json }}"#}
+                :project_integrations="{{ config['project_integrations'] | list_pd_to_json }}"
+            ></reporter-email>
         </div>
     </div>
 </div>

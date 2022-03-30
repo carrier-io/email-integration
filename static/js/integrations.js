@@ -1,257 +1,276 @@
-const Email = {
-    edit: data => {
-        console.log('editIntegration', data)
-        const {description, is_default, id, settings} = data
-        emailVm.load({...settings, description, is_default, id})
-        emailVm.modal.modal('show')
-    },
-    delete: id => {
-        emailVm.load({id})
-        emailVm.delete()
-    },
-    initialState: () => ({
-        modal_style: {'height': '100px', 'border': ''},
-        host: '',
-        port: null,
-        user: '',
-        passwd: '',
-        sender: '',
-        description: '',
-        is_default: false,
-        is_fetching: false,
-        error: {},
-        id: null,
-        template: '',
-        fileName: '',
-        pluginName: 'reporter_email',
-    })
-}
+// const Email = {
+//     edit: data => {
+//
+//     },
+//     delete: id => {
+//
+//     },
+//     initialState: () => ({
+//         modal_style: {'height': '100px', 'border': ''},
+//         host: '',
+//         port: null,
+//         user: '',
+//         passwd: '',
+//         sender: '',
+//         description: '',
+//         is_default: false,
+//         is_fetching: false,
+//         error: {},
+//         id: null,
+//         template: '',
+//         fileName: '',
+//         pluginName: 'reporter_email',
+//     })
+// }
 
-const TestConnectionButton = {
-    delimiters: ['[[', ']]'],
-    props: ['error', 'apiPath', 'is_fetching', 'body_data'],
-    emits: ['update:is_fetching', 'handleError'],
-    data() {
-        return {
-            status: 0,
-        }
-    },
-    computed: {
-        test_connection_class() {
-            if (200 <= this.status && this.status < 300) {
-                return 'btn-success'
-            } else if (this.status > 0) {
-                return 'btn-warning'
-            } else {
-                return 'btn-secondary'
-            }
-        },
-    },
-    template: `
-        <button type="button" class="btn btn-sm mt-3"
-                @click="test_connection"
-                :class="[{disabled: is_fetching, updating: is_fetching, 'is-invalid': error}, test_connection_class]"
-        >
-            Test connection
-        </button>
-        <div class="invalid-feedback">[[ error ]]</div>
-    `,
-    watch: {
-        is_fetching(newState, oldState) {
-            console.log('watch is_fetching', newState)
-            if (newState) {
-                this.status = 0
-            }
-        }
-    },
-    methods: {
-        test_connection() {
-            this.$emit('update:is_fetching', true)
-            fetch(this.apiPath, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.body_data)
-            }).then(response => {
-                console.log(response)
-                // this.is_fetching = false
-                this.$emit('update:is_fetching', false)
-                this.status = response.status
-                if (!response.ok) {
-                    this.$emit('handleError', response)
-                }
-            })
-        },
-    }
-}
 
 const EmailIntegration = {
     delimiters: ['[[', ']]'],
-    // props: {
-    //     modelValue: ,
-    //     modal_id: String,
-    //     display_name: String,
-    //     show_test_connection: Boolean
-    // },
-    props: ['instance_name', 'display_name', 'default_template', 'modal_id', 'show_test_connection'],
+    props: ['instance_name', 'display_name', 'default_template', 'modal_id'],
     // props: ['modelValue'],
     // emits: ['register'],
-    components: {
-        TestConnectionButton
-    },
+    // components: {
+    //     TestConnectionButton
+    // },
+    // template: `
+    //     <div
+    //         :id="modal_id"
+    //         class="modal modal-small fixed-left fade shadow-sm" tabindex="-1" role="dialog"
+    //         @dragover.prevent="modal_style = {'height': '300px', 'border': '2px dashed var(--basic)'}"
+    //         @drop.prevent="modal_style = {'height': '100px', 'border': ''}"
+    //         >
+    //         <div class="modal-dialog modal-dialog-aside" role="document">
+    //             <div class="modal-content">
+    //                 <div class="modal-header">
+    //                     <div class="row w-100">
+    //                         <div class="col">
+    //                             <h2>[[ display_name ]] integration</h2>
+    //                             <p v-if="id">
+    //                                 <h13>id: [[ id ]]</h13>
+    //                             </p>
+    //                         </div>
+    //                         <div class="col-xs">
+    //                             <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
+    //                                 Cancel
+    //                             </button>
+    //                             <button type="button" class="btn btn-sm btn-secondary"
+    //                                     :class="{disabled: is_fetching, updating: is_fetching}"
+    //                                     @click.prevent="id ? update() : create()"
+    //                             >
+    //                                 [[ id ? 'Update' : 'Save' ]]
+    //                             </button>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //
+    //                 <div class="modal-body">
+    //                     <div class="form-group">
+    //                         <h9>Host</h9>
+    //                         <input type="text" v-model="host" class="form-control form-control-alternative"
+    //                                placeholder="SMTP host"
+    //                                :class="{ 'is-invalid': error.host }">
+    //                         <div class="invalid-feedback">[[ error.host ]]</div>
+    //
+    //                         <h9>Port</h9>
+    //                         <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
+    //                                v-model="port"
+    //                                :class="{ 'is-invalid': error.port }"
+    //                         >
+    //                         <div class="invalid-feedback">[[ error.port ]]</div>
+    //                         <div class="form-group form-row">
+    //                             <div class="col-6">
+    //                                 <h9>User</h9>
+    //                                 <input type="text"  class="form-control form-control-alternative"
+    //                                     v-model="user"
+    //                                     placeholder="SMTP user"
+    //                                     :class="{ 'is-invalid': error.user }">
+    //                                 <div class="invalid-feedback">[[ error.user ]]</div>
+    //                             </div>
+    //                             <div class="col-6">
+    //                                 <h9>Password</h9>
+    //                                 <input type="password" class="form-control form-control-alternative"
+    //                                        placeholder="SMTP password"
+    //                                        v-model="passwd"
+    //                                        :class="{ 'is-invalid': error.passwd }">
+    //                                 <div class="invalid-feedback">[[ error.passwd ]]</div>
+    //                             </div>
+    //                         </div>
+    //                         <h9>Sender</h9>
+    //                         <p>
+    //                             <h13>Optional. By default emails are sent from SMTP user</h13>
+    //                         </p>
+    //                         <input type="text"  class="form-control form-control-alternative"
+    //                             v-model="sender"
+    //                             placeholder="Email sender"
+    //                             :class="{ 'is-invalid': error.sender }">
+    //                         <div class="invalid-feedback">[[ error.sender ]]</div>
+    //                         <h9>Email template</h9>
+    //                         <p>
+    //                             <h13>You may edit template or upload new one instead</h13>
+    //                         </p>
+    //                         <div class="form-group">
+    //
+    //                             <p v-if="fileName">
+    //                                 <h13>[[ fileName ]] preview:</h13>
+    //                             </p>
+    //                             <textarea class="form-control" rows="3"
+    //                                       v-model="template"
+    //                                       @drop.prevent="handleDrop"
+    //                                       :style="modal_style"
+    //                             ></textarea>
+    //                             <label>
+    //                                 <span class="btn btn-secondary">Upload template</span>
+    //                                 <h13>Or drag and drop .html file in the template area</h13>
+    //                                 <input type="file" accept="text/html" class="form-control form-control-alternative"
+    //                                        style="display: none"
+    //                                        @change="handleInputFile"
+    //                                        :class="{ 'is-invalid': error.template }"
+    //                                 >
+    //                             </label>
+    //
+    //                             <div class="invalid-feedback">[[ error.template ]]</div>
+    //                         </div>
+    //                     </div>
+    //                     <div class="form-group">
+    //                         <label class="w-100">
+    //                             <h9>Description</h9>
+    //                             <textarea class="form-control" rows="1" placeholder="Optional"
+    //                                       v-model="description">
+    //                                 </textarea>
+    //
+    //                         </label>
+    //                     </div>
+    //                     <div class="form-check">
+    //                         <label>
+    //                             <input class="form-check-input" type="checkbox"
+    //                                    v-model="is_default">
+    //                             <h9>
+    //                                 Set as default
+    //                             </h9>
+    //                         </label>
+    //                     </div>
+    //
+    //                     <test-connection-button
+    //                         :apiPath="apiPath + 'check_settings'"
+    //                         :error="error.check_connection"
+    //                         :body_data="body_data"
+    //                         v-model:is_fetching="is_fetching"
+    //                         @handleError="handleError"
+    //                     >
+    //                     </test-connection-button>
+    //
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // `,
+
     template: `
-        <div 
-            :id="modal_id"
-            class="modal modal-small fixed-left fade shadow-sm" tabindex="-1" role="dialog"
-            @dragover.prevent="modal_style = {'height': '300px', 'border': '2px dashed var(--basic)'}"
-            @drop.prevent="modal_style = {'height': '100px', 'border': ''}"
-            >
-            <div class="modal-dialog modal-dialog-aside" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="row w-100">
-                            <div class="col">
-                                <h2>[[ display_name ]] integration</h2>
-                                <p v-if="id">
-                                    <h13>id: [[ id ]]</h13>
-                                </p>
-                            </div>
-                            <div class="col-xs">
-                                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
-                                    Cancel
-                                </button>
-                                <button type="button" class="btn btn-sm btn-secondary"
-                                        :class="{disabled: is_fetching, updating: is_fetching}"
-                                        @click.prevent="id ? update() : create()"
-                                >
-                                    [[ id ? 'Update' : 'Save' ]]
-                                </button>
-                            </div>
-                        </div>
+<div
+        :id="modal_id"
+        class="modal modal-small fixed-left fade shadow-sm" tabindex="-1" role="dialog"
+        @dragover.prevent="modal_style = {'height': '300px', 'border': '2px dashed var(--basic)'}"
+        @drop.prevent="modal_style = {'height': '100px', 'border': ''}"
+>
+    <ModalDialog
+            v-model:description="description"
+            v-model:is_default="is_default"
+            @update="update"
+            @create="create"
+            :display_name="display_name"
+            :id="id"
+            :is_fetching="is_fetching"
+    >
+        <template #body>
+            <div class="form-group">
+                <h9>Host</h9>
+                <input type="text" v-model="host" class="form-control form-control-alternative"
+                       placeholder="SMTP host"
+                       :class="{ 'is-invalid': error.host }">
+                <div class="invalid-feedback">[[ error.host ]]</div>
+
+                <h9>Port</h9>
+                <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
+                       v-model="port"
+                       :class="{ 'is-invalid': error.port }"
+                >
+                <div class="invalid-feedback">[[ error.port ]]</div>
+                <div class="form-group form-row">
+                    <div class="col-6">
+                        <h9>User</h9>
+                        <input type="text" class="form-control form-control-alternative"
+                               v-model="user"
+                               placeholder="SMTP user"
+                               :class="{ 'is-invalid': error.user }">
+                        <div class="invalid-feedback">[[ error.user ]]</div>
                     </div>
-        
-        
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <h9>Host</h9>
-                            <input type="text" v-model="host" class="form-control form-control-alternative"
-                                   placeholder="SMTP host"
-                                   :class="{ 'is-invalid': error.host }">
-                            <div class="invalid-feedback">[[ error.host ]]</div>
-        
-                            <h9>Port</h9>
-                            <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
-                                   v-model="port"
-                                   :class="{ 'is-invalid': error.port }"
-                            >
-                            <div class="invalid-feedback">[[ error.port ]]</div>
-                            <div class="form-group form-row">
-                                <div class="col-6">
-                                    <h9>User</h9>
-                                    <input type="text"  class="form-control form-control-alternative"
-                                        v-model="user"
-                                        placeholder="SMTP user"
-                                        :class="{ 'is-invalid': error.user }">
-                                    <div class="invalid-feedback">[[ error.user ]]</div>
-                                </div>
-                                <div class="col-6">
-                                    <h9>Password</h9>
-                                    <input type="password" class="form-control form-control-alternative"
-                                           placeholder="SMTP password"
-                                           v-model="passwd"
-                                           :class="{ 'is-invalid': error.passwd }">
-                                    <div class="invalid-feedback">[[ error.passwd ]]</div>
-                                </div>
-                            </div>
-                            <h9>Sender</h9>
-                            <p>
-                                <h13>Optional. By default emails are sent from SMTP user</h13>
-                            </p>
-                            <input type="text"  class="form-control form-control-alternative"
-                                v-model="sender"
-                                placeholder="Email sender"
-                                :class="{ 'is-invalid': error.sender }">
-                            <div class="invalid-feedback">[[ error.sender ]]</div>
-                            <h9>Email template</h9>
-                            <p>
-                                <h13>You may edit template or upload new one instead</h13>
-                            </p>
-                            <div class="form-group">
-        
-                                <p v-if="fileName">
-                                    <h13>[[ fileName ]] preview:</h13>
-                                </p>
-                                <textarea class="form-control" rows="3"
-                                          v-model="template"
-                                          @drop.prevent="handleDrop"
-                                          :style="modal_style"
-                                ></textarea>
-                                <label>
-                                    <span class="btn btn-secondary">Upload template</span>
-                                    <h13>Or drag and drop .html file in the template area</h13>
-                                    <input type="file" accept="text/html" class="form-control form-control-alternative"
-                                           style="display: none"
-                                           @change="handleInputFile"
-                                           :class="{ 'is-invalid': error.template }"
-                                    >
-                                </label>
-                                
-                                <div class="invalid-feedback">[[ error.template ]]</div>
-                            </div>
-                        </div>
-        
-        
-                        <div class="form-group">
-                            <label class="w-100">
-                                <h9>Description</h9>
-                                <textarea class="form-control" rows="1" placeholder="Optional"
-                                          v-model="description">
-                                    </textarea>
-        
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <label>
-                                <input class="form-check-input" type="checkbox"
-                                       v-model="is_default">
-                                <h9>
-                                    Set as default
-                                </h9>
-                            </label>
-                        </div>
-                        
-                        
-                        
-                        
-                        
-                        
-                        <TestConnectionButton
-                            :apiPath="apiPath + 'check_settings'"
-                            :error="error.check_connection"
-                            :body_data="body_data"
-                            v-model:is_fetching="is_fetching"
-                            @handleError="handleError"
-                            v-if="show_test_connection"
-                        >
-                        
-</TestConnectionButton>
-                        
-                        
-                        
-                        
-                        
-                        
+                    <div class="col-6">
+                        <h9>Password</h9>
+                        <input type="password" class="form-control form-control-alternative"
+                               placeholder="SMTP password"
+                               v-model="passwd"
+                               :class="{ 'is-invalid': error.passwd }">
+                        <div class="invalid-feedback">[[ error.passwd ]]</div>
                     </div>
                 </div>
+                <h9>Sender</h9>
+                <p>
+                    <h13>Optional. By default emails are sent from SMTP user</h13>
+                </p>
+                <input type="text" class="form-control form-control-alternative"
+                       v-model="sender"
+                       placeholder="Email sender"
+                       :class="{ 'is-invalid': error.sender }">
+                <div class="invalid-feedback">[[ error.sender ]]</div>
+                <h9>Email template</h9>
+                <p>
+                    <h13>You may edit template or upload new one instead</h13>
+                </p>
+                <div class="form-group">
+
+                    <p v-if="fileName">
+                        <h13>[[ fileName ]] preview:</h13>
+                    </p>
+                    <textarea class="form-control" rows="3"
+                              v-model="template"
+                              @drop.prevent="handleDrop"
+                              :style="modal_style"
+                    ></textarea>
+                    <label>
+                        <span class="btn btn-secondary">Upload template</span>
+                        <h13>Or drag and drop .html file in the template area</h13>
+                        <input type="file" accept="text/html" class="form-control form-control-alternative"
+                               style="display: none"
+                               @change="handleInputFile"
+                               :class="{ 'is-invalid': error.template }"
+                        >
+                    </label>
+
+                    <div class="invalid-feedback">[[ error.template ]]</div>
+                </div>
             </div>
-        </div>
+        </template>
+        <template #footer>
+            <test-connection-button
+                    :apiPath="apiPath + 'check_settings'"
+                    :error="error.check_connection"
+                    :body_data="body_data"
+                    v-model:is_fetching="is_fetching"
+                    @handleError="handleError"
+            >
+            </test-connection-button>
+        </template>
+
+    </ModalDialog>
+</div>
     `,
     data() {
-        return Email.initialState()
+        return this.initialState()
     },
     mounted() {
-        // this.modal.on('hidden.bs.modal', e => {
-        //     this.clear()
-        // })
+        this.modal.on('hidden.bs.modal', e => {
+            this.clear()
+        })
         // this.$emit('update:modelValue', this.$data)
         // this.$emit('register', this.instance_name, this)
         console.log('EmailIntegration mounted', this)
@@ -306,7 +325,7 @@ const EmailIntegration = {
         clear() {
             Object.assign(this.$data, {
                 ...this.$data,
-                ...Email.initialState(),
+                ...this.initialState(),
             })
         },
         load(stateData) {
@@ -315,6 +334,16 @@ const EmailIntegration = {
                 ...stateData,
                 template: this.loadBase64(stateData.template)
             })
+        },
+        handleEdit(data) {
+            console.log('editIntegration', data)
+            const {description, is_default, id, settings} = data
+            this.load({...settings, description, is_default, id})
+            this.modal.modal('show')
+        },
+        handleDelete() {
+            this.load({id})
+            this.delete()
         },
         create() {
             this.is_fetching = true
@@ -407,6 +436,22 @@ const EmailIntegration = {
                 this.handleFileUpload(input.files[0])
             }
         },
+        initialState: () => ({
+            modal_style: {'height': '100px', 'border': ''},
+            host: '',
+            port: null,
+            user: '',
+            passwd: '',
+            sender: '',
+            description: '',
+            is_default: false,
+            is_fetching: false,
+            error: {},
+            id: null,
+            template: '',
+            fileName: '',
+            pluginName: 'reporter_email',
+        })
     }
 
 }

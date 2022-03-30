@@ -30,16 +30,50 @@ const emailInitialState = () => ({
     recipients: [],
     errors: [],
     warnings: [],
+    selected_integration: undefined,
 })
 
-const emailApp = Vue.createApp({
+const EmailRecipient = {
+    props: ['email', 'index'],
+    emits: ['remove'],
     delimiters: ['[[', ']]'],
+    template: `
+        <li class="list-group-item d-inline-flex justify-content-between p-1">
+            <h13>[[ email ]]</h13>
+            <button
+                type="button"
+                class="btn btn-action btn-24"
+                title="remove"
+                @click.prevent="remove"
+            >
+                <i class="fa fa-times"></i>
+            </button>
+        </li>
+    `,
+    methods: {
+        remove() {
+            console.log('Emitting removal', this.index)
+            this.$emit('remove', this.index)
+        }
+    }
+
+}
+
+const EmailIntegration = {
+    delimiters: ['[[', ']]'],
+    components: {
+        EmailRecipient
+    },
+    props: ['instance_name', 'project_integrations', 'integration_name'],
     data() {
         return emailInitialState()
     },
     computed: {
         hasErrors() {
             return this.errors.length + this.warnings.length > 0
+        },
+        container_id() {
+            return `selector_${this.integration_name}`
         }
     },
     methods: {
@@ -83,33 +117,82 @@ const emailApp = Vue.createApp({
         removeIndex(index) {
             this.recipients.splice(index, 1)
         }
-    }
-})
-// <!--            class="btn btn-outline-danger btn-fab btn-icon btn-round btn-sm"-->
-emailApp.component('recipient', {
-    props: ['email', 'index'],
-    emits: ['remove'],
-    delimiters: ['[[', ']]'],
+    },
+    mounted() {
+        console.log('project_integrations', this.project_integrations)
+        // console.log(JSON.parse(this.project_integrations))
+    },
+// <select className="selectpicker" data-style="btn-secondary">
+//     {% for i in config['project_integrations'] %}
+//     <option
+//         value="{{ i.id }}"
+//         {% if i.is_default %} selected data-is_default="true"{% endif %}
+//         title="{{ i.description }} {% if i.is_default %} - default {% endif %}"
+//     >
+//         {{i.description}} {% if i.is_default %} - default {% endif %}
+//     </option>
+//     {% endfor %}
+// </select>
     template: `
-        <li class="list-group-item d-inline-flex justify-content-between p-1">
-            <h13>[[ email ]]</h13>
-            <button
-                type="button"
-                class="btn btn-action btn-24"
-                title="remove"
-                @click.prevent="remove"
-            >
-                <i class="fa fa-times"></i>
-            </button>
-        </li>
-    `,
-    methods: {
-        remove() {
-            console.log('Emitting removal', this.index)
-            this.$emit('remove', this.index)
-        }
-    }
 
-})
-emailApp.config.compilerOptions.isCustomElement = tag => ['h9', 'h13'].includes(tag)
-const emailVm = emailApp.mount('#reporter_email')
+<div class="collapse col-12 mb-3 pl-0" :id="container_id">
+    Here goes the selectpicker with:
+    [[ project_integrations ]]
+    <select class="selectpicker" data-style="btn-secondary"
+    v-model="selected_integration">
+        <option
+            v-for="integration in project_integrations"
+            
+        >
+            [[ integration.description ]]
+        </option>
+    </select>
+    <div class="mt-3">
+        <h9>Recipients</h9>
+        <div class="input-group">
+            <input type="email" class="form-control" placeholder="Recipients' emails comma-separated"
+                   v-model="email"
+                   :class="{ 'is-invalid': hasErrors }"
+            >
+            <div class="input-group-append">
+                <button class="btn btn-secondary btn-37" type="button"
+                        style="max-width: unset"
+                        @click="handleAdd"
+                        :disabled="email === ''"
+                        :class="{ 'btn-danger': hasErrors }"
+                >
+                    Add
+                </button>
+            </div>
+
+        </div>
+        <div class="invalid-feedback"
+             style="display: block"
+             v-if="hasErrors"
+        >
+            <div v-for="error in errors">
+                [[ error ]]
+            </div>
+            <div v-for="warning in warnings" class="text-warning">
+                [[ warning ]]
+            </div>
+        </div>
+        <ul class="list-group mt-1 list-group-flush">
+            <EmailRecipient
+                    v-for="(item, index) in recipients"
+                    :key="index"
+                    :index="index"
+                    :email="item"
+                    @remove="removeIndex"
+            ></EmailRecipient>
+        </ul>
+    </div>
+</div>
+    `
+}
+// <!--            class="btn btn-outline-danger btn-fab btn-icon btn-round btn-sm"-->
+
+// emailApp.config.compilerOptions.isCustomElement = tag => ['h9', 'h13'].includes(tag)
+// const emailVm = emailApp.mount('#reporter_email')
+
+register_component('reporter-email', EmailIntegration)

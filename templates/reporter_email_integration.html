@@ -1,6 +1,6 @@
 {% set integration_name = 'reporter_email' %}
 {% set display_name = 'Email' %}
-{% set show_test_connection = True %}
+{#{% set show_test_connection = True %}#}
 
 {{ template_slot('integrations_default_add_button', payload={
     'integration_name': integration_name,
@@ -8,17 +8,17 @@
     'logo': '<img src="%s"></img>' | format(url_for('%s.static' | format(integration_name), filename='logo.svg'))
 }) | safe }}
 
-{{ template_slot('integrations_default_add_button', payload={
-    'integration_name': 'reporter_email_2',
-    'display_name': 'Email 2',
-    'logo': '<img src="%s"></img>' | format(url_for('%s.static' | format(integration_name), filename='logo.svg'))
-}) | safe }}
+{#<add-integration-button#}
+{#    integration_name="{{ integration_name }}"#}
+{#    display_name="{{ display_name }}"#}
+{#    logo="{{ '<img src="%s"></img>' | format(url_for('%s.static' | format(integration_name), filename='logo.svg')) }}"#}
+{#></add-integration-button>#}
 
 
 <email-integration
 {#        v-model="integration_email"#}
 {#        v-slot="navProps"#}
-        instance_name="integration_email"
+        instance_name="reporter_email"
         @register="register"
 
         display_name="Email"
@@ -27,17 +27,17 @@
         :show_test_connection="true"
 ></email-integration>
 
-<email-integration
+{#<email-integration#}
 {#        v-model="integration_email2"#}
 {#        v-slot="navProps"#}
-        instance_name="integration_email2"
-        @register="register"
-
-        display_name="Email2"
-        default_template="dtdtdtdtdtdtdtdt"
-        modal_id="reporter_email_2_integration"
-        :show_test_connection="true"
-></email-integration>
+{#        instance_name="integration_email2"#}
+{#        @register="register"#}
+{##}
+{#        display_name="Email2"#}
+{#        default_template="dtdtdtdtdtdtdtdt"#}
+{#        modal_id="reporter_email_2_integration"#}
+{#        :show_test_connection="true"#}
+{#></email-integration>#}
 
 
 <script src="{{ url_for('%s.static' | format(integration_name), filename='js/integrations.js') }}"></script>
