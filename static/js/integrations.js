@@ -26,7 +26,7 @@
 
 const EmailIntegration = {
     delimiters: ['[[', ']]'],
-    props: ['instance_name', 'display_name', 'default_template', 'modal_id'],
+    props: ['instance_name', 'display_name', 'default_template'],
     // props: ['modelValue'],
     // emits: ['register'],
     // components: {
@@ -273,10 +273,10 @@ const EmailIntegration = {
         })
         // this.$emit('update:modelValue', this.$data)
         // this.$emit('register', this.instance_name, this)
-        console.log('EmailIntegration mounted', this)
-        console.log('EmailIntegration mounted', this.$el)
-        console.log('EmailIntegration mounted', this.$attrs)
-        console.log('EmailIntegration mounted', this.$props)
+        // console.log('EmailIntegration mounted', this)
+        // console.log('EmailIntegration mounted', this.$el)
+        // console.log('EmailIntegration mounted', this.$attrs)
+        // console.log('EmailIntegration mounted', this.$props)
     },
     computed: {
         apiPath() {
@@ -305,6 +305,9 @@ const EmailIntegration = {
         },
         modal() {
             return $(this.$el)
+        },
+        modal_id() {
+            return `${this.instance_name}_integration`
         }
     },
 

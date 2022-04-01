@@ -1,8 +1,9 @@
 window['reporters_reporter_email'] = {
     get_data: () => {
         if ($('#integration_checkbox_reporter_email').prop('checked')) {
-            const id = $('#selector_reporter_email .selectpicker').val()
-            const recipients = emailVm.recipients
+            // const id = $('#selector_reporter_email .selectpicker').val()
+            // const recipients = emailVm.recipients
+            const {selected_integration: id, recipients} = vueVm.reporter_email
             return {id, recipients}
         }
     },
@@ -10,28 +11,28 @@ window['reporters_reporter_email'] = {
         console.log('settings data for reporter_email', data)
         const {id, recipients} = data
         $('#integration_checkbox_reporter_email').prop('checked', true)
-        $('#selector_reporter_email .selectpicker').val(id).selectpicker('refresh')
+        // $('#selector_reporter_email .selectpicker').val(id).selectpicker('refresh')
         $('#selector_reporter_email').collapse('show')
-        emailVm.recipients = recipients
+        vueVm.reporter_email.id = id
+        vueVm.reporter_email.recipients = recipients
     },
     clear_data: () => {
-        const selector = $('#selector_reporter_email .selectpicker')
-        selector[0]?.options.forEach(item =>
-            $(item).attr('data-is_default') && $(selector[0]).val($(item).val()).selectpicker('refresh')
-        )
+        // const selector = $('#selector_reporter_email .selectpicker')
+        // selector[0]?.options.forEach(item =>
+        //     $(item).attr('data-is_default') && $(selector[0]).val($(item).val()).selectpicker('refresh')
+        // )
         $('#integration_checkbox_reporter_email').prop('checked', false)
         $('#selector_reporter_email').collapse('hide')
-        emailVm.clear()
+        vueVm.registered_components.reporter_email.clear()
     }
 }
 
-const emailInitialState = () => ({
-    email: '',
-    recipients: [],
-    errors: [],
-    warnings: [],
-    selected_integration: undefined,
-})
+// const emailInitialState = () => ({
+//     email: '',
+//     recipients: [],
+//     errors: [],
+//     warnings: [],
+// })
 
 const EmailRecipient = {
     props: ['email', 'index'],
@@ -66,7 +67,11 @@ const EmailIntegration = {
     },
     props: ['instance_name', 'project_integrations', 'integration_name'],
     data() {
-        return emailInitialState()
+        return {
+            ...this.initialState(),
+            selected_integration: undefined,
+
+        }
     },
     computed: {
         hasErrors() {
@@ -74,14 +79,18 @@ const EmailIntegration = {
         },
         container_id() {
             return `selector_${this.integration_name}`
+        },
+        default_integration() {
+            return this.project_integrations.find(item => item.is_default)
         }
     },
     methods: {
         clear() {
             Object.assign(this.$data, {
                 ...this.$data,
-                ...emailInitialState(),
+                ...this.initialState(),
             })
+            this.selected_integration = this.default_integration?.id
         },
         add(email) {
             console.log('Adding email', email)
@@ -116,11 +125,22 @@ const EmailIntegration = {
         },
         removeIndex(index) {
             this.recipients.splice(index, 1)
-        }
+        },
+        getIntegrationTitle(integration) {
+            return integration.is_default ? `${integration.description} - default` : integration.description
+        },
+        initialState: () => ({
+            email: '',
+            recipients: [],
+            errors: [],
+            warnings: [],
+        })
     },
     mounted() {
         console.log('project_integrations', this.project_integrations)
+        console.log('default_integration', this.default_integration)
         // console.log(JSON.parse(this.project_integrations))
+        this.selected_integration = this.default_integration?.id
     },
 // <select className="selectpicker" data-style="btn-secondary">
 //     {% for i in config['project_integrations'] %}
@@ -136,15 +156,16 @@ const EmailIntegration = {
     template: `
 
 <div class="collapse col-12 mb-3 pl-0" :id="container_id">
-    Here goes the selectpicker with:
-    [[ project_integrations ]]
+<!--    Here goes the selectpicker with:-->
+<!--    [[ project_integrations ]]-->
     <select class="selectpicker" data-style="btn-secondary"
     v-model="selected_integration">
         <option
             v-for="integration in project_integrations"
-            
+            :value="integration.id"
+            :title="getIntegrationTitle(integration)"
         >
-            [[ integration.description ]]
+            [[ getIntegrationTitle(integration) ]]
         </option>
     </select>
     <div class="mt-3">
