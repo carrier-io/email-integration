@@ -142,19 +142,6 @@ const EmailIntegration = {
         }
     },
     methods: {
-        loadBase64(b64text) {
-            if (b64text === '') return ''
-            try {
-                return atob(b64text)
-            } catch (e) {
-                console.error(e)
-                this.error.template = 'Only files of data:text/html;base64 are supported'
-                this.template = ''
-                this.fileName = ''
-                return ''
-            }
-        },
-
         clear() {
             Object.assign(this.$data, {
                 ...this.$data,
@@ -174,7 +161,7 @@ const EmailIntegration = {
             this.load({...settings, description, is_default, id})
             this.modal.modal('show')
         },
-        handleDelete() {
+        handleDelete(id) {
             this.load({id})
             this.delete()
         },
@@ -245,6 +232,19 @@ const EmailIntegration = {
                 }
             })
         },
+
+        loadBase64(b64text) {
+            if (b64text === '') return ''
+            try {
+                return atob(b64text)
+            } catch (e) {
+                console.error(e)
+                this.error.template = 'Only files of data:text/html;base64 are supported'
+                this.template = ''
+                this.fileName = ''
+                return ''
+            }
+        },
         handleFileUpload(file) {
             let reader = new FileReader()
             reader.onload = (evt) => {
@@ -269,6 +269,7 @@ const EmailIntegration = {
                 this.handleFileUpload(input.files[0])
             }
         },
+
         initialState: () => ({
             modal_style: {'height': '100px', 'border': ''},
             host: '',

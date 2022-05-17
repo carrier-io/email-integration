@@ -1,0 +1,56 @@
+{% set integration_name = 'reporter_email' %}
+{% set display_name = 'Email' %}
+
+{#<div class="col-6 security_integration_item" data-name="{{ integration_name }}" id="{{ integration_name }}">#}
+{#    <div class="card card-row-1">#}
+{#        <div class="card-header">#}
+{#            <div class="d-flex">#}
+{#                <h9 class="flex-grow-1" style="line-height: 24px">{{ display_name }}</h9>#}
+{#                <button aria-expanded="false" #}
+{#                        class="btn btn-24 btn-action"#}
+{#                        data-target="#settings_{{ integration_name }}" #}
+{#                        data-toggle="collapse" #}
+{#                        type="button">#}
+{#                    <i class="fas fa-cog"></i>#}
+{#                </button>#}
+{#                <label class="custom-toggle">#}
+{#                    <input aria-expanded="false" class="integration_checkbox"#}
+{#                           data-target="#selector_{{ integration_name }}" data-toggle="collapse"#}
+{#                           id="integration_checkbox_{{ integration_name }}" type="checkbox"/>#}
+{#                    <span class="custom-toggle-slider rounded-circle"></span>#}
+{#                </label>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="row">#}
+{#            <reporter-email#}
+{#                @register="register"#}
+{#                instance_name="{{ integration_name }}"#}
+{##}
+{#                integration_name="{{ integration_name }}"#}
+{#                :project_integrations="{{ project_integrations | list_pd_to_json }}"#}
+{#            ></reporter-email>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+
+<Test-Integration-Item
+    integration_name="{{ integration_name }}"
+    display_name="{{ display_name }}"
+    :project_integrations="{{ project_integrations | list_pd_to_json }}"
+>
+{#    <template #selector="slotProps">#}
+    <template #selector="{selected_integration, is_selected}">
+        <reporter-email
+            @register="register"
+            instance_name="{{ integration_name }}"
+            section="reporters"
+
+            :selected_integration="selected_integration"
+            :is_selected="is_selected"
+        ></reporter-email>
+    </template>
+{#    <template #settings>#}
+{#        qwe 123#}
+{#    </template>#}
+</Test-Integration-Item>
+

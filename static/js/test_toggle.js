@@ -1,39 +1,3 @@
-window['reporters_reporter_email'] = {
-    get_data: () => {
-        if ($('#integration_checkbox_reporter_email').prop('checked')) {
-            // const id = $('#selector_reporter_email .selectpicker').val()
-            // const recipients = emailVm.recipients
-            const {selected_integration: id, recipients} = vueVm.reporter_email
-            return {id, recipients}
-        }
-    },
-    set_data: data => {
-        console.log('settings data for reporter_email', data)
-        const {id, recipients} = data
-        $('#integration_checkbox_reporter_email').prop('checked', true)
-        // $('#selector_reporter_email .selectpicker').val(id).selectpicker('refresh')
-        $('#selector_reporter_email').collapse('show')
-        vueVm.reporter_email.id = id
-        vueVm.reporter_email.recipients = recipients
-    },
-    clear_data: () => {
-        // const selector = $('#selector_reporter_email .selectpicker')
-        // selector[0]?.options.forEach(item =>
-        //     $(item).attr('data-is_default') && $(selector[0]).val($(item).val()).selectpicker('refresh')
-        // )
-        $('#integration_checkbox_reporter_email').prop('checked', false)
-        $('#selector_reporter_email').collapse('hide')
-        vueVm.registered_components.reporter_email.clear()
-    }
-}
-
-// const emailInitialState = () => ({
-//     email: '',
-//     recipients: [],
-//     errors: [],
-//     warnings: [],
-// })
-
 const EmailRecipient = {
     props: ['email', 'index'],
     emits: ['remove'],
@@ -57,7 +21,6 @@ const EmailRecipient = {
             this.$emit('remove', this.index)
         }
     }
-
 }
 
 const EmailIntegration = {
@@ -65,33 +28,63 @@ const EmailIntegration = {
     components: {
         EmailRecipient
     },
-    props: ['instance_name', 'project_integrations', 'integration_name'],
+    props: ['instance_name', 'section', 'selected_integration', 'is_selected', 'is_selected', 'selected_integration'],
     data() {
-        return {
-            ...this.initialState(),
-            selected_integration: undefined,
-
-        }
+        return this.initialState()
     },
     computed: {
         hasErrors() {
             return this.errors.length + this.warnings.length > 0
         },
-        container_id() {
-            return `selector_${this.integration_name}`
-        },
-        default_integration() {
-            return this.project_integrations.find(item => item.is_default)
-        }
+        // container_id() {
+        //     return `selector_${this.integration_name}`
+        // },
+
     },
     methods: {
-        clear() {
+        get_data() {
+            // if ($('#integration_checkbox_reporter_email').prop('checked')) {
+            if (this.is_selected) {
+                const {selected_integration: id, recipients} = this
+                return {id, recipients}
+            }
+        },
+        set_data(data) {
+            console.log('settings data for reporter_email', data)
+            const {id, recipients} = data
+            // $('#integration_checkbox_reporter_email').prop('checked', true)
+            // // $('#selector_reporter_email .selectpicker').val(id).selectpicker('refresh')
+            // // $('#selector_reporter_email').collapse('show')
+            // // vueVm.reporter_email.id = id
+            // // vueVm.reporter_email.recipients = recipients
+            // $(this.$el).collapse('show')
+            this.id = id
+            this.recipients = recipients
+            this.$emit('set_data')
+        },
+        clear_data() {
+            // // const selector = $('#selector_reporter_email .selectpicker')
+            // // selector[0]?.options.forEach(item =>
+            // //     $(item).attr('data-is_default') && $(selector[0]).val($(item).val()).selectpicker('refresh')
+            // // )
+            // $('#integration_checkbox_reporter_email').prop('checked', false)
+            // $(this.$el).collapse('hide')
+            // // $('#selector_reporter_email').collapse('hide')
+            // // vueVm.registered_components.reporter_email.clear()
             Object.assign(this.$data, {
                 ...this.$data,
                 ...this.initialState(),
             })
-            this.selected_integration = this.default_integration?.id
+            this.$emit('clear_data')
+            console.log('CLEAR_DATA EmailIntegration')
         },
+        // clear() {
+        //     Object.assign(this.$data, {
+        //         ...this.$data,
+        //         ...this.initialState(),
+        //     })
+        //     this.selected_integration = this.default_integration?.id
+        // },
         add(email) {
             console.log('Adding email', email)
             if (email === '') return;
@@ -126,9 +119,7 @@ const EmailIntegration = {
         removeIndex(index) {
             this.recipients.splice(index, 1)
         },
-        getIntegrationTitle(integration) {
-            return integration.is_default ? `${integration.description} - default` : integration.description
-        },
+
         initialState: () => ({
             email: '',
             recipients: [],
@@ -136,38 +127,19 @@ const EmailIntegration = {
             warnings: [],
         })
     },
-    mounted() {
-        console.log('project_integrations', this.project_integrations)
-        console.log('default_integration', this.default_integration)
-        // console.log(JSON.parse(this.project_integrations))
-        this.selected_integration = this.default_integration?.id
-    },
-// <select className="selectpicker" data-style="btn-secondary">
-//     {% for i in config['project_integrations'] %}
-//     <option
-//         value="{{ i.id }}"
-//         {% if i.is_default %} selected data-is_default="true"{% endif %}
-//         title="{{ i.description }} {% if i.is_default %} - default {% endif %}"
-//     >
-//         {{i.description}} {% if i.is_default %} - default {% endif %}
-//     </option>
-//     {% endfor %}
-// </select>
+    // mounted() {
+    //     console.log('slotPropsslotPropsslotProps', this.$props)
+    // //     // console.log('project_integrations', this.project_integrations)
+    // //     // console.log('default_integration', this.default_integration)
+    // //     // console.log(JSON.parse(this.project_integrations))
+    // //     this.selected_integration = this.default_integration?.id
+    // //     // window['reporters_reporter_email'] = {
+    // //     //
+    // //     // }
+    // },
     template: `
 
-<div class="collapse col-12 mb-3 pl-0" :id="container_id">
-<!--    Here goes the selectpicker with:-->
-<!--    [[ project_integrations ]]-->
-    <select class="selectpicker" data-style="btn-secondary"
-    v-model="selected_integration">
-        <option
-            v-for="integration in project_integrations"
-            :value="integration.id"
-            :title="getIntegrationTitle(integration)"
-        >
-            [[ getIntegrationTitle(integration) ]]
-        </option>
-    </select>
+
     <div class="mt-3">
         <h9>Recipients</h9>
         <div class="input-group">
@@ -208,12 +180,7 @@ const EmailIntegration = {
             ></EmailRecipient>
         </ul>
     </div>
-</div>
-    `
+`
 }
-// <!--            class="btn btn-outline-danger btn-fab btn-icon btn-round btn-sm"-->
-
-// emailApp.config.compilerOptions.isCustomElement = tag => ['h9', 'h13'].includes(tag)
-// const emailVm = emailApp.mount('#reporter_email')
 
 register_component('reporter-email', EmailIntegration)
