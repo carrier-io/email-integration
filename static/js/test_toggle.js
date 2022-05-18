@@ -28,7 +28,8 @@ const EmailIntegration = {
     components: {
         EmailRecipient
     },
-    props: ['instance_name', 'section', 'selected_integration', 'is_selected', 'is_selected', 'selected_integration'],
+    props: ['instance_name', 'section', 'selected_integration', 'is_selected'],
+    emits: ['set_data', 'clear_data'],
     data() {
         return this.initialState()
     },
@@ -41,6 +42,13 @@ const EmailIntegration = {
         // },
 
     },
+    // watch: {
+    //     selected_integration(newState, oldState) {
+    //         console.log('watching selected_integration: ', oldState, '->', newState)
+    //         console.log('watching selected_integration: ', this.integration_data)
+    //         this.set_data(this.integration_data.settings)
+    //     }
+    // },
     methods: {
         get_data() {
             // if ($('#integration_checkbox_reporter_email').prop('checked')) {
@@ -71,10 +79,7 @@ const EmailIntegration = {
             // $(this.$el).collapse('hide')
             // // $('#selector_reporter_email').collapse('hide')
             // // vueVm.registered_components.reporter_email.clear()
-            Object.assign(this.$data, {
-                ...this.$data,
-                ...this.initialState(),
-            })
+            Object.assign(this.$data, this.initialState())
             this.$emit('clear_data')
             console.log('CLEAR_DATA EmailIntegration')
         },

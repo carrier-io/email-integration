@@ -39,11 +39,14 @@
     :project_integrations="{{ project_integrations | list_pd_to_json }}"
 >
 {#    <template #selector="slotProps">#}
-    <template #selector="{selected_integration, is_selected}">
+    <template #selector="{selected_integration, is_selected, on_set_data, on_clear_data}">
         <reporter-email
             @register="register"
             instance_name="{{ integration_name }}"
             section="reporters"
+
+            @set_data="on_set_data"
+            @clear_data="on_clear_data"
 
             :selected_integration="selected_integration"
             :is_selected="is_selected"

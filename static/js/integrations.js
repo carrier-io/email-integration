@@ -143,15 +143,10 @@ const EmailIntegration = {
     },
     methods: {
         clear() {
-            Object.assign(this.$data, {
-                ...this.$data,
-                ...this.initialState(),
-            })
+            Object.assign(this.$data, this.initialState())
         },
         load(stateData) {
-            Object.assign(this.$data, {
-                ...this.$data,
-                ...stateData,
+            Object.assign(this.$data, stateData,{
                 template: this.loadBase64(stateData.template)
             })
         },
