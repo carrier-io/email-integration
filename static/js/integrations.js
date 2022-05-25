@@ -217,19 +217,27 @@ const EmailIntegration = {
                 method: 'DELETE',
             }).then(response => {
                 this.is_fetching = false
+
                 if (response.ok) {
                     location.reload()
                     // alertMain.add('Email integration deleted')
                     // setTimeout(() => location.reload(), 1000)
                 } else {
                     this.handleError(response)
-                    alertMain.add(`Deletion error. <button class="btn btn-primary" @click="modal.modal('show')">Open modal<button>`)
+                    alertMain.add(`
+                        Deletion error. 
+                        <button class="btn btn-primary" 
+                            onclick="vueVm.registered_components.${this.instance_name}.modal.modal('show')"
+                        >
+                            Open modal
+                        <button>
+                    `)
                 }
             })
         },
 
         loadBase64(b64text) {
-            if (b64text === '') return ''
+            if (!b64text) return ''
             try {
                 return atob(b64text)
             } catch (e) {
