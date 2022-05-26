@@ -59,16 +59,12 @@ const EmailIntegration = {
         },
         set_data(data) {
             console.log('settings data for reporter_email', data)
+
             const {id, recipients} = data
-            // $('#integration_checkbox_reporter_email').prop('checked', true)
-            // // $('#selector_reporter_email .selectpicker').val(id).selectpicker('refresh')
-            // // $('#selector_reporter_email').collapse('show')
-            // // vueVm.reporter_email.id = id
-            // // vueVm.reporter_email.recipients = recipients
-            // $(this.$el).collapse('show')
-            this.id = id
+
+            // this.id = id
             this.recipients = recipients
-            this.$emit('set_data')
+            this.$emit('set_data', {id})
         },
         clear_data() {
             // // const selector = $('#selector_reporter_email .selectpicker')
