@@ -22,7 +22,7 @@ class RPC:
         result['recipients'] = scanner_params['recipients']
 
         log.info("Result: %s", result)
-        return result
+        return "email", result
 
     @web.rpc(f'security_test_create_integration_validate_{integration_name}')
     @rpc_tools.wrap_exceptions(ValidationError)
