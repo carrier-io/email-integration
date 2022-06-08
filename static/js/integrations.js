@@ -151,7 +151,6 @@ const EmailIntegration = {
             })
         },
         handleEdit(data) {
-            console.log('editIntegration', data)
             const {description, is_default, id, settings} = data
             this.load({...settings, description, is_default, id})
             this.modal.modal('show')
@@ -182,9 +181,7 @@ const EmailIntegration = {
             try {
                 response.json().then(
                     errorData => {
-                        console.log(errorData)
                         errorData.forEach(item => {
-                            console.log('item error', item)
                             this.error = {[item.loc[0]]: item.msg}
                         })
                     }
