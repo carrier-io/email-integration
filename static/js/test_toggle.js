@@ -17,7 +17,6 @@ const EmailRecipient = {
     `,
     methods: {
         remove() {
-            console.log('Emitting removal', this.index)
             this.$emit('remove', this.index)
         }
     }
@@ -58,8 +57,6 @@ const EmailIntegration = {
             }
         },
         set_data(data) {
-            console.log('settings data for reporter_email', data)
-
             const {id, recipients} = data
 
             // this.id = id
@@ -77,7 +74,6 @@ const EmailIntegration = {
             // // vueVm.registered_components.reporter_email.clear()
             Object.assign(this.$data, this.initialState())
             this.$emit('clear_data')
-            console.log('CLEAR_DATA EmailIntegration')
         },
         // clear() {
         //     Object.assign(this.$data, {
@@ -87,7 +83,6 @@ const EmailIntegration = {
         //     this.selected_integration = this.default_integration?.id
         // },
         add(email) {
-            console.log('Adding email', email)
             if (email === '') return;
             if (!this.validateEmail(email)) {
                 this.errors.push(`Email ${email} is invalid`)
