@@ -24,6 +24,7 @@ class IntegrationModel(BaseModel):
     def check_connection(self) -> bool:
         try:
             smtp = SMTP(self.host, self.port)
+            smtp.ehlo()
             smtp.login(self.user, self.passwd)
             smtp.quit()
             return True
@@ -47,3 +48,12 @@ class IntegrationModel(BaseModel):
 class SecurityTestModel(BaseModel):
     id: int
     recipients: List[EmailStr]
+
+
+class PerformanceBackendTestModel(BaseModel):
+    id: int
+    recipients: List[EmailStr]
+    error_rate: int = 10
+    performance_degradation_rate: int = 20
+    missed_thresholds: int = 50
+

@@ -1,5 +1,4 @@
 from pylon.core.tools import log, web
-from flask import g
 import base64
 
 

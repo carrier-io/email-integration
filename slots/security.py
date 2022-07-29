@@ -1,9 +1,4 @@
 from pylon.core.tools import log, web
-from flask import g
-# import base64
-#
-#
-# from ..models.integration_pd import IntegrationModel
 
 
 class Slot:

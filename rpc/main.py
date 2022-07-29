@@ -2,7 +2,7 @@ from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pydantic import parse_obj_as, ValidationError
 from pylon.core.tools import web
 
-from ..models.integration_pd import SecurityTestModel
+from ..models.integration_pd import SecurityTestModel, PerformanceBackendTestModel
 
 from tools import rpc_tools
 
@@ -28,4 +28,10 @@ class RPC:
     @rpc_tools.wrap_exceptions(ValidationError)
     def security_test_create_integration_validate(self, data: dict, **kwargs) -> dict:
         pd_object = SecurityTestModel(**data)
+        return pd_object.dict(**kwargs)
+
+    @web.rpc(f'backend_performance_test_create_integration_validate_{integration_name}')
+    @rpc_tools.wrap_exceptions(ValidationError)
+    def security_test_create_integration_validate(self, data: dict, **kwargs) -> dict:
+        pd_object = PerformanceBackendTestModel(**data)
         return pd_object.dict(**kwargs)
