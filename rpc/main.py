@@ -32,6 +32,13 @@ class RPC:
 
     @web.rpc(f'backend_performance_test_create_integration_validate_{integration_name}')
     @rpc_tools.wrap_exceptions(ValidationError)
-    def security_test_create_integration_validate(self, data: dict, **kwargs) -> dict:
+    def backend_performance_test_create_integration_validate(self, data: dict, **kwargs) -> dict:
         pd_object = PerformanceBackendTestModel(**data)
         return pd_object.dict(**kwargs)
+
+    @web.rpc(f'execution_json_config_{integration_name}')
+    @rpc_tools.wrap_exceptions(RuntimeError)
+    def make_execution_json_config(self, integration_id: int) -> dict:
+        """ Prepare execution_json for this integration """
+        integration = self.context.rpc_manager.call.integrations_get_by_id(integration_id)
+        return {'integration_settings': integration.settings, 'task_id': integration.task_id}
