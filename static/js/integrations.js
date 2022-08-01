@@ -89,7 +89,7 @@ const EmailIntegration = {
         </template>
         <template #footer>
             <test-connection-button
-                    :apiPath="api_base + 'check_settings'"
+                    :apiPath="api_base + 'check_settings/' + pluginName"
                     :error="error.check_connection"
                     :body_data="body_data"
                     v-model:is_fetching="is_fetching"
