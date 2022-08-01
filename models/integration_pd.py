@@ -1,5 +1,5 @@
 import binascii
-from smtplib import SMTP
+import smtplib
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
@@ -23,10 +23,13 @@ class IntegrationModel(BaseModel):
 
     def check_connection(self) -> bool:
         try:
-            smtp = SMTP(self.host, self.port, timeout=10)
-            smtp.ehlo()
-            smtp.login(self.user, self.passwd)
-            smtp.quit()
+            with smtplib.SMTP_SSL(host=self.host, port=self.port) as server:
+                server.ehlo()
+                server.login(self.user, self.passwd)
+            # smtp = SMTP(self.host, self.port, timeout=10)
+            # smtp.ehlo()
+            # smtp.login(self.user, self.passwd)
+            # smtp.quit()
             return True
         except Exception as e:
             log.exception(e)
