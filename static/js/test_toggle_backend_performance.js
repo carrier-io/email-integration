@@ -40,13 +40,16 @@ const EmailIntegration = {
     methods: {
         get_data() {
             if (this.is_selected) {
-                const {selected_integration: id, recipients} = this
-                return {id, recipients}
+                const {selected_integration: id, recipients, error_rate, performance_degradation_rate, missed_thresholds} = this
+                return {id, recipients, error_rate, performance_degradation_rate, missed_thresholds}
             }
         },
         set_data(data) {
-            const {id, recipients} = data
+            const {id, recipients, error_rate, performance_degradation_rate, missed_thresholds} = data
             this.recipients = recipients
+            this.error_rate = error_rate
+            this.performance_degradation_rate = performance_degradation_rate
+            this.missed_thresholds = missed_thresholds
             this.$emit('set_data', {id})
         },
         clear_data() {
@@ -92,10 +95,39 @@ const EmailIntegration = {
             recipients: [],
             errors: [],
             warnings: [],
+            error_rate: 10,
+            performance_degradation_rate: 20,
+            missed_thresholds: 50,
         })
     },
     template: `
         <div class="mt-3">
+            <div class="d-flex">
+                <label class="col-6 pl-0">
+                    <h9>Error rate</h9>
+                    <input type="number" class="form-control" 
+                        placeholder="Optional. Default: 10"
+                        v-model="error_rate"
+                    >
+                </label>
+                <label class="col-6 pr-0">
+                    <h9>Degradation rate</h9>
+                    <input type="number" class="form-control" 
+                        placeholder="Optional. Default: 20"
+                        v-model="performance_degradation_rate"
+                    >  
+                </label>
+            </div>
+            <div class="d-flex">
+                <label class="col-12 p-0">
+                    <h9>Missed Thresholds</h9>
+                    <input type="number" class="form-control" 
+                        placeholder="Optional. Default: 50"
+                        v-model="missed_thresholds"
+                    >
+                </label>
+            </div>
+            <div class="mt-3">
             <h9>Recipients</h9>
             <div class="input-group">
                 <input type="email" class="form-control" placeholder="Recipients' emails comma-separated"
@@ -134,6 +166,7 @@ const EmailIntegration = {
                         @remove="removeIndex"
                 ></EmailRecipient>
             </ul>
+            </div>
         </div>
     `
 }

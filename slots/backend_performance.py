@@ -23,5 +23,5 @@ class Slot:
     def toggle_scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'test_toggle/scripts.html',
+                'test_toggle/backend_performance/scripts.html',
             )
