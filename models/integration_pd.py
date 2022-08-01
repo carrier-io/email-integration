@@ -23,7 +23,7 @@ class IntegrationModel(BaseModel):
 
     def check_connection(self) -> bool:
         try:
-            smtp = SMTP(self.host, self.port)
+            smtp = SMTP(self.host, self.port, timeout=10)
             smtp.ehlo()
             smtp.login(self.user, self.passwd)
             smtp.quit()
