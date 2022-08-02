@@ -2,7 +2,6 @@
 {% set integration_name = 'reporter_email' %}
 {% set display_name = 'Email' %}
 
-instance_name_prefix {{ instance_name_prefix }}
 <Test-Integration-Item
     integration_name="{{ '%s%s' | format(instance_name_prefix, integration_name) }}"
     display_name="{{ display_name }}"
