@@ -20,7 +20,7 @@ class RPC:
         integration_data['settings'].pop('email_notification_args', None)
         integration_data['settings']['galloper_url'] = '{{secret.galloper_url}}'
         integration_data['settings']['token'] = '{{secret.auth_token}}'
-        integration_data['settings']['project_id'] = '{{secret.project_id}}'
+        integration_data['settings']['project_id'] = integration_data["project_id"]
 
         if not integration_data['task_id']:
             email_notification_args = {
