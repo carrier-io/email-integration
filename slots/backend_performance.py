@@ -16,7 +16,8 @@ class Slot:
         with context.app.app_context():
             return self.descriptor.render_template(
                 'test_toggle/content.html',
-                project_integrations=project_integrations
+                project_integrations=project_integrations,
+                instance_name_prefix=payload.get('instance_name_prefix', '')
             )
 
     @web.slot(f'backend_performance_{section_name}_scripts')
