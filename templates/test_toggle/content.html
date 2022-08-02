@@ -1,9 +1,10 @@
+{% set instance_name_prefix = instance_name_prefix | default('') %}
 {% set integration_name = 'reporter_email' %}
 {% set display_name = 'Email' %}
 
-
+instance_name_prefix {{ instance_name_prefix }}
 <Test-Integration-Item
-    integration_name="{{ integration_name }}"
+    integration_name="{{ '%s%s' | format(instance_name_prefix, integration_name) }}"
     display_name="{{ display_name }}"
     :project_integrations="{{ project_integrations | list_pd_to_json }}"
 >
@@ -11,7 +12,7 @@
     <template #selector="{selected_integration, is_selected, on_set_data, on_clear_data}">
         <reporter-email
             @register="register"
-            instance_name="{{ integration_name }}"
+            instance_name="{{ '%s%s' | format(instance_name_prefix, integration_name) }}"
             section="reporters"
 
             @set_data="on_set_data"
