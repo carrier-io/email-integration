@@ -60,3 +60,6 @@ class PerformanceBackendTestModel(BaseModel):
     performance_degradation_rate: int = 20
     missed_thresholds: int = 50
 
+
+class PerformanceUiTestModel(PerformanceBackendTestModel):
+    ...
