@@ -50,5 +50,5 @@ class Slot:
     def ui_toggle_scripts(self, context, slot, payload):
         with context.app.app_context():
             return self.descriptor.render_template(
-                'test_toggle/scripts_performance.html',
+                'test_toggle/scripts.html',
             )
