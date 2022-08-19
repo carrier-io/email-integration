@@ -7,7 +7,6 @@
     display_name="{{ display_name }}"
     :project_integrations="{{ project_integrations | list_pd_to_json }}"
 >
-{#    <template #selector="slotProps">#}
     <template #selector="{selected_integration, is_selected, on_set_data, on_clear_data}">
         <reporter-email
             @register="register"
@@ -21,8 +20,5 @@
             :is_selected="is_selected"
         ></reporter-email>
     </template>
-{#    <template #settings>#}
-{#        qwe 123#}
-{#    </template>#}
 </Test-Integration-Item>
 
