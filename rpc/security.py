@@ -13,12 +13,12 @@ class RPC:
 
     @web.rpc(f'dusty_config_{integration_name}')
     @rpc_tools.wrap_exceptions(RuntimeError)
-    def make_dusty_config(self, context, test_params, scanner_params):
+    def make_dusty_config(self, context, test_params, scanner_params) -> tuple:
         """ Prepare dusty config for this scanner """
         log.info("Test params: %s", test_params)
         log.info("Scanner params: %s", scanner_params)
 
-        integration = context.rpc_manager.call.integrations_get_by_id(scanner_params['id'])
+        integration = self.context.rpc_manager.call.integrations_get_by_id(scanner_params['id'])
         result = integration.settings
         result['recipients'] = scanner_params['recipients']
 
