@@ -53,13 +53,11 @@ class SecurityTestModel(BaseModel):
     recipients: List[EmailStr]
 
 
-class PerformanceBackendTestModel(BaseModel):
-    id: int
-    recipients: List[EmailStr]
+class PerformanceBackendTestModel(SecurityTestModel):
     error_rate: int = 10
     performance_degradation_rate: int = 20
     missed_thresholds: int = 50
 
 
-class PerformanceUiTestModel(PerformanceBackendTestModel):
+class PerformanceUiTestModel(SecurityTestModel):
     ...

@@ -40,7 +40,11 @@ class RPC:
 
     @web.rpc(f'ui_performance_execution_json_config_{integration_name}')
     @rpc_tools.wrap_exceptions(RuntimeError)
-    def ui_make_execution_json_config(self, integration_id: int) -> dict:
+    def ui_make_execution_json_config(self, integration_data: dict) -> dict:
         """ Prepare execution_json for this integration """
+        # right now structures for backend and ui are identical
+        integration_id = integration_data.get('id')
         integration = self.context.rpc_manager.call.integrations_get_by_id(integration_id)
-        return {'integration_settings': integration.settings, 'task_id': integration.task_id}
+        integration_data['integration_settings'] = integration.settings
+        integration_data['task_id'] = integration.task_id
+        return integration_data
