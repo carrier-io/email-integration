@@ -7,8 +7,9 @@
 <add-integration-button
     integration_name="{{ integration_name }}"
     display_name="{{ display_name }}"
-    logo="{{ '<img src="%s"></img>' | format(url_for('%s.static' | format(integration_name), filename='logo.svg')) }}"
-></add-integration-button>
+>
+    <img src="{{ url_for('%s.static' | format(integration_name), filename='logo.svg') }}"/>
+</add-integration-button>
 
 
 <email-integration

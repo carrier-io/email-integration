@@ -1,6 +1,9 @@
 const EmailIntegration = {
     delimiters: ['[[', ']]'],
     props: ['instance_name', 'display_name', 'default_template'],
+    components: {
+        SecretFieldInput: SecretFieldInput
+    },
     template: `
 <div
         :id="modal_id"
@@ -43,11 +46,11 @@ const EmailIntegration = {
                     </div>
                     <div class="col-6">
                         <h9>Password</h9>
-                        <input type="password" class="form-control form-control-alternative"
-                               placeholder="SMTP password"
-                               v-model="passwd"
-                               :class="{ 'is-invalid': error.passwd }">
-                        <div class="invalid-feedback">[[ error.passwd ]]</div>
+                        <SecretFieldInput
+                            v-model="passwd"
+                            placeholder="SMTP password"
+                        />
+                        <div v-show="error.passwd" class="invalid-feedback" style="display: block">[[ error.passwd ]]</div>
                     </div>
                 </div>
                 <h9>Sender</h9>
@@ -73,8 +76,8 @@ const EmailIntegration = {
                               @drop.prevent="handleDrop"
                               :style="modal_style"
                     ></textarea>
-                    <label>
-                        <span class="btn btn-secondary">Upload template</span>
+                    <label class="mt-1">
+                        <span class="btn btn-secondary btn-sm mr-1 d-inline-block">Upload template</span>
                         <h13>Or drag and drop .html file in the template area</h13>
                         <input type="file" accept="text/html" class="form-control form-control-alternative"
                                style="display: none"
@@ -275,7 +278,10 @@ const EmailIntegration = {
             host: '',
             port: null,
             user: '',
-            passwd: '',
+            passwd: {
+                value: '',
+                from_secrets: false
+            },
             sender: '',
             description: '',
             is_default: false,
