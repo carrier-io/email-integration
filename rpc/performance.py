@@ -25,6 +25,7 @@ class RPC:
         """ Prepare execution_json for this integration """
         integration_id = integration_data.get('id')
         integration = self.context.rpc_manager.call.integrations_get_by_id(integration_id)
+        integration.settings['passwd'] = integration.settings['passwd'].get('value', integration.settings['passwd'])
         integration_data['integration_settings'] = integration.settings
         integration_data['task_id'] = integration.task_id
         return integration_data
