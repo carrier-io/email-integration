@@ -54,9 +54,7 @@ class SecurityTestModel(BaseModel):
 
 
 class PerformanceBackendTestModel(SecurityTestModel):
-    error_rate: int = 10
-    performance_degradation_rate: int = 20
-    missed_thresholds: int = 50
+    ...
 
 
 class PerformanceUiTestModel(SecurityTestModel):
