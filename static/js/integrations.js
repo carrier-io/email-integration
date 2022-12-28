@@ -1,6 +1,7 @@
-const EmailIntegration = {
+const EmailIntegrationModal = {
     delimiters: ['[[', ']]'],
-    props: ['instance_name', 'display_name', 'default_template'],
+    props: ['instance_name', 'display_name', 'default_template', 'logo_src', 'section_name'],
+    emits: ['update'],
     components: {
         SecretFieldInput: SecretFieldInput
     },
@@ -23,18 +24,23 @@ const EmailIntegration = {
     >
         <template #body>
             <div class="form-group">
-                <h9>Host</h9>
-                <input type="text" v-model="host" class="form-control form-control-alternative"
-                       placeholder="SMTP host"
-                       :class="{ 'is-invalid': error.host }">
-                <div class="invalid-feedback">[[ error.host ]]</div>
-
-                <h9>Port</h9>
-                <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
-                       v-model="port"
-                       :class="{ 'is-invalid': error.port }"
-                >
-                <div class="invalid-feedback">[[ error.port ]]</div>
+                <div>
+                    <p class="font-h5 font-semibold">Host</p>
+                    <input type="text" v-model="host" class="form-control form-control-alternative"
+                           placeholder="SMTP host"
+                           :class="{ 'is-invalid': error.host }">
+                    <div class="invalid-feedback">[[ error.host ]]</div>
+                </div>
+                
+                <div>
+                   <h9>Port</h9>
+                    <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
+                           v-model="port"
+                           :class="{ 'is-invalid': error.port }"
+                    >
+                    <div class="invalid-feedback">[[ error.port ]]</div>
+                </div>
+                
                 <div class="form-group form-row">
                     <div class="col-6">
                         <h9>User</h9>
@@ -117,7 +123,8 @@ const EmailIntegration = {
             return this.api_base + 'integration/'
         },
         project_id() {
-            return getSelectedProjectId()
+            // return getSelectedProjectId()
+            return this.$root.project_id
         },
         body_data() {
             const {
@@ -133,7 +140,6 @@ const EmailIntegration = {
             } = this
             return {host, port, user, passwd, sender, description, is_default, project_id, template}
         },
-
         base64Template() {
             return btoa(this.template)
         },
@@ -149,7 +155,7 @@ const EmailIntegration = {
             Object.assign(this.$data, this.initialState())
         },
         load(stateData) {
-            Object.assign(this.$data, stateData,{
+            Object.assign(this.$data, stateData, {
                 template: this.loadBase64(stateData.template)
             })
         },
@@ -162,78 +168,93 @@ const EmailIntegration = {
             this.load({id})
             this.delete()
         },
-        create() {
-            this.is_fetching = true
-            fetch(this.apiPath + this.pluginName, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.body_data)
-            }).then(response => {
-                this.is_fetching = false
-                if (response.ok) {
-                    this.modal.modal('hide')
-                    location.reload()
-                    // alertMain.add('Email reporter created!', 'success-overlay')
-                    // setTimeout(() => location.reload(), 1500)
-                } else {
-                    this.handleError(response)
-                }
+        handleError(error_data) {
+            error_data.forEach(item => {
+                this.error = {[item.loc[0]]: item.msg}
             })
         },
-        handleError(response) {
+        async create() {
+            this.is_fetching = true
             try {
-                response.json().then(
-                    errorData => {
-                        errorData.forEach(item => {
-                            this.error = {[item.loc[0]]: item.msg}
-                        })
-                    }
-                )
+                const resp = await fetch(this.apiPath + this.pluginName, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.body_data)
+                })
+                if (resp.ok) {
+                    this.modal.modal('hide')
+                    // location.reload()
+                    // alertMain.add('Email reporter created!', 'success-overlay')
+                    // setTimeout(() => location.reload(), 1500)
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
+                    // showNotify('SUCCESS', 'Created')
+                } else {
+                    const error_data = await resp.json()
+                    this.handleError(error_data)
+                }
             } catch (e) {
-                alertMain.add(e, 'danger-overlay')
+                console.error(e)
+                showNotify('ERROR', 'Error creating reporter email')
+            } finally {
+                // setTimeout(() => {
+                this.is_fetching = false
+                // }, 2000)
             }
         },
-        update() {
+        async update() {
             this.is_fetching = true
-            fetch(this.apiPath + this.id, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.body_data)
-            }).then(response => {
-                this.is_fetching = false
-                if (response.ok) {
+            try {
+                const resp = await fetch(this.apiPath + this.id, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.body_data)
+                })
+                if (resp.ok) {
                     this.modal.modal('hide')
-                    location.reload()
+                    // location.reload()
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
                     // alertMain.add('Email reporter updated!', 'success-overlay')
                     // setTimeout(() => location.reload(), 1500)
                 } else {
-                    this.handleError(response)
+                    const error_data = await resp.json()
+                    this.handleError(error_data)
                 }
-            })
-        },
-        delete() {
-            this.is_fetching = true
-            fetch(this.apiPath + this.id, {
-                method: 'DELETE',
-            }).then(response => {
+            } catch (e) {
+                console.error(e)
+                showNotify('ERROR', 'Error updating reporter email')
+            } finally {
                 this.is_fetching = false
-
-                if (response.ok) {
-                    location.reload()
+            }
+        },
+        async delete() {
+            this.is_fetching = true
+            try {
+                const resp = await fetch(this.apiPath + this.id, {
+                    method: 'DELETE',
+                })
+                if (resp.ok) {
+                    // location.reload()
                     // alertMain.add('Email integration deleted')
                     // setTimeout(() => location.reload(), 1000)
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
                 } else {
-                    this.handleError(response)
+                    const error_data = await resp.json()
+                    this.handleError(error_data)
                     alertMain.add(`
                         Deletion error. 
                         <button class="btn btn-primary" 
-                            onclick="vueVm.registered_components.${this.instance_name}.modal.modal('show')"
+                            @click="registered_components?.${this.instance_name}?.modal.modal('show')"
                         >
                             Open modal
                         <button>
                     `)
                 }
-            })
+            } catch (e) {
+                console.error(e)
+                showNotify('ERROR', 'Error deleting reporter email')
+            } finally {
+                this.is_fetching = false
+            }
         },
 
         loadBase64(b64text) {
@@ -297,4 +318,4 @@ const EmailIntegration = {
     }
 }
 
-register_component('EmailIntegration', EmailIntegration)
+register_component('EmailIntegrationModal', EmailIntegrationModal)

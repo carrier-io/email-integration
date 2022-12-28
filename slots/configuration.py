@@ -15,7 +15,8 @@ class Slot:
         with context.app.app_context():
             return self.descriptor.render_template(
                 'integration/content.html',
-                default_template=default_template
+                default_template=default_template,
+                section_name=Slot.section_name
             )
 
     @web.slot(f'integrations_{section_name}_scripts')
