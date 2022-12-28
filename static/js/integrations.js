@@ -24,42 +24,44 @@ const EmailIntegrationModal = {
     >
         <template #body>
             <div class="form-group">
-                <div>
-                    <p class="font-h5 font-semibold">Host</p>
-                    <input type="text" v-model="host" class="form-control form-control-alternative"
-                           placeholder="SMTP host"
-                           :class="{ 'is-invalid': error.host }">
-                    <div class="invalid-feedback">[[ error.host ]]</div>
-                </div>
-                
-                <div>
-                   <h9>Port</h9>
-                    <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
-                           v-model="port"
-                           :class="{ 'is-invalid': error.port }"
-                    >
-                    <div class="invalid-feedback">[[ error.port ]]</div>
-                </div>
-                
-                <div class="form-group form-row">
-                    <div class="col-6">
-                        <h9>User</h9>
-                        <input type="text" class="form-control form-control-alternative"
-                               v-model="user"
-                               placeholder="SMTP user"
-                               :class="{ 'is-invalid': error.user }">
-                        <div class="invalid-feedback">[[ error.user ]]</div>
+                <div class="d-flex">
+                    <div class="col-8 p-0 mr-1">
+                        <p class="font-h5 font-semibold">Host</p>
+                        <input type="text" v-model="host" class="form-control form-control-alternative"
+                               placeholder="SMTP host"
+                               :class="{ 'is-invalid': error.host }">
+                        <div class="invalid-feedback">[[ error.host ]]</div>
                     </div>
-                    <div class="col-6">
-                        <h9>Password</h9>
-                        <SecretFieldInput
-                            v-model="passwd"
-                            placeholder="SMTP password"
-                        />
-                        <div v-show="error.passwd" class="invalid-feedback" style="display: block">[[ error.passwd ]]</div>
+                    
+                    <div class="col">
+                       <p class="font-h5 font-semibold">Port</p>
+                        <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
+                               v-model="port"
+                               :class="{ 'is-invalid': error.port }"
+                        >
+                        <div class="invalid-feedback">[[ error.port ]]</div>
                     </div>
                 </div>
-                <h9>Sender</h9>
+                
+        
+                <div>
+                    <p class="font-h5 font-semibold">User</p>
+                    <input type="text" class="form-control form-control-alternative"
+                           v-model="user"
+                           placeholder="SMTP user"
+                           :class="{ 'is-invalid': error.user }">
+                    <div class="invalid-feedback">[[ error.user ]]</div>
+                </div>
+                <div>
+                    <p class="font-h5 font-semibold">Password</p>
+                    <SecretFieldInput
+                        v-model="passwd"
+                        placeholder="SMTP password"
+                    />
+                    <div v-show="error.passwd" class="invalid-feedback" style="display: block">[[ error.passwd ]]</div>
+                </div>
+                
+                <p class="font-h5 font-semibold">Sender</p>
                 <p>
                     <h13>Optional. By default emails are sent from SMTP user</h13>
                 </p>
@@ -68,7 +70,7 @@ const EmailIntegrationModal = {
                        placeholder="Email sender"
                        :class="{ 'is-invalid': error.sender }">
                 <div class="invalid-feedback">[[ error.sender ]]</div>
-                <h9>Email template</h9>
+                <p class="font-h5 font-semibold">Email template</p>
                 <p>
                     <h13>You may edit template or upload new one instead</h13>
                 </p>
