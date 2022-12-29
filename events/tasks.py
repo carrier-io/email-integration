@@ -31,6 +31,7 @@ class Event:  # pylint: disable=E1101,R0903
 
     @web.event(f"{integration_name}_created_or_updated")
     def _created_or_updated(self, context, event, payload):
+
         try:
             integration_data = payload
             project = self.context.rpc_manager.call.project_get_or_404(project_id=integration_data["project_id"])
@@ -55,13 +56,19 @@ class Event:  # pylint: disable=E1101,R0903
                         email_notification_args,
                     )
                     log.info('reporter task id %s', email_task.task_id)
-                    self.context.rpc_manager.call\
-                            .integrations_set_task_id(integration_id, email_task.task_id)
+                    self.context.rpc_manager.call.integrations_set_task_id(integration_id, email_task.task_id)
 
-                    context.sio.emit("task_creation", {"ok":True, "name": payload['name'], 'id':integration_id, "img_src": "/reporter_email/static/logo_white.png"})
+                    context.sio.emit("task_creation", {"ok": True, "name": payload['name'], 'id': integration_id,
+                                                       "img_src": "/reporter_email/static/logo_white.png"})
                 except Exception as e:
                     log.error('Couldn\'t create task. %s', e)
-                    context.sio.emit("task_creation", {"ok":False, "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'})
+                    context.sio.emit("task_creation", {
+                        "ok": False,
+                        "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'
+                    })
         except Exception as e:
             log.error('Error occurred in task creation event. %s', e)
-            context.sio.emit("task_creation", {"ok":False, "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'})
+            context.sio.emit("task_creation", {
+                "ok": False,
+                "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'
+            })
