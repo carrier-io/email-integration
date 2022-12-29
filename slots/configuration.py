@@ -33,13 +33,13 @@ class Slot:
     #             'integration/styles.html',
     #         )
 
-    @web.slot(f'integration_card_{integration_name}')
-    def integration_card(self, context, slot, payload):
-        """
-        :param payload: Holds pydantic model of the integration
-        """
-        with context.app.app_context():
-            return self.descriptor.render_template(
-                'integration/card.html',
-                integration_data=payload
-            )
+    # @web.slot(f'integration_card_{integration_name}')
+    # def integration_card(self, context, slot, payload):
+    #     """
+    #     :param payload: Holds pydantic model of the integration
+    #     """
+    #     with context.app.app_context():
+    #         return self.descriptor.render_template(
+    #             'integration/card.html',
+    #             integration_data=payload
+    #         )
