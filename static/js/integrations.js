@@ -138,9 +138,10 @@ const EmailIntegrationModal = {
                 description,
                 is_default,
                 project_id,
-                base64Template: template
+                base64Template: template,
+                status
             } = this
-            return {host, port, user, passwd, sender, description, is_default, project_id, template}
+            return {host, port, user, passwd, sender, description, is_default, project_id, template, status}
         },
         base64Template() {
             return btoa(this.template)
@@ -314,6 +315,7 @@ const EmailIntegrationModal = {
             template: '',
             fileName: '',
             pluginName: 'reporter_email',
+            status: integration_status.pending,
 
             api_base: '/api/v1/integrations/',
         })

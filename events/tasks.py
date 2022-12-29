@@ -31,17 +31,19 @@ class Event:  # pylint: disable=E1101,R0903
 
     @web.event(f"{integration_name}_created_or_updated")
     def _created_or_updated(self, context, event, payload):
-
         try:
             integration_data = payload
             project = self.context.rpc_manager.call.project_get_or_404(project_id=integration_data["project_id"])
             log.info('reporter email %s', integration_data['settings'])
-            integration_data['settings'].pop('email_notification_args', None)
-            integration_data['settings']['galloper_url'] = '{{secret.galloper_url}}'
-            integration_data['settings']['token'] = '{{secret.auth_token}}'
-            integration_data['settings']['project_id'] = integration_data["project_id"]
-            integration_id = integration_data['id']
             if not integration_data['task_id']:
+                self.context.rpc_manager.call.integrations_set_task_id(payload['id'], None, 'pending')
+                sleep(5)
+                raise Exception('Custom message here')
+                integration_data['settings'].pop('email_notification_args', None)
+                integration_data['settings']['galloper_url'] = '{{secret.galloper_url}}'
+                integration_data['settings']['token'] = '{{secret.auth_token}}'
+                integration_data['settings']['project_id'] = integration_data["project_id"]
+                integration_id = integration_data['id']
                 email_notification_args = {
                     'funcname': f'email_integration_{integration_data["id"]}',
                     'invoke_func': 'lambda_function.lambda_handler',
@@ -56,19 +58,29 @@ class Event:  # pylint: disable=E1101,R0903
                         email_notification_args,
                     )
                     log.info('reporter task id %s', email_task.task_id)
-                    self.context.rpc_manager.call.integrations_set_task_id(integration_id, email_task.task_id)
+                    updated_data = self.context.rpc_manager.call.integrations_set_task_id(
+                        integration_id,
+                        email_task.task_id,
+                        'success'
+                    )
 
-                    context.sio.emit("task_creation", {"ok": True, "name": payload['name'], 'id': integration_id,
-                                                       "img_src": "/reporter_email/static/logo_white.png"})
+                    context.sio.emit("task_creation", {
+                        "ok": True,
+                        **updated_data
+                    })
                 except Exception as e:
+                    updated_data = self.context.rpc_manager.call.integrations_set_task_id(payload['id'], None, 'error')
                     log.error('Couldn\'t create task. %s', e)
                     context.sio.emit("task_creation", {
                         "ok": False,
-                        "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'
+                        "status_message": f'Couldn\'t create task for {updated_data["name"]} with {updated_data["id"]}. {e}',
+                        **updated_data
                     })
         except Exception as e:
+            updated_data = self.context.rpc_manager.call.integrations_set_task_id(payload['id'], None, 'error')
             log.error('Error occurred in task creation event. %s', e)
             context.sio.emit("task_creation", {
                 "ok": False,
-                "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'
+                "status_message": f'Couldn\'t create task for {updated_data["name"]} with {updated_data["id"]}. {e}',
+                **updated_data
             })
