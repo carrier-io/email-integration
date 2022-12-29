@@ -20,6 +20,7 @@ import json
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
 from tools import task_tools, data_tools, constants
+from time import sleep
 
 
 class Event:  # pylint: disable=E1101,R0903
@@ -56,8 +57,11 @@ class Event:  # pylint: disable=E1101,R0903
                     log.info('reporter task id %s', email_task.task_id)
                     self.context.rpc_manager.call\
                             .integrations_set_task_id(integration_id, email_task.task_id)
+
+                    context.sio.emit("task_creation", {"ok":True, "name": payload['name'], 'id':integration_id, "img_src": "/reporter_email/static/logo_white.png"})
                 except Exception as e:
                     log.error('Couldn\'t create task. %s', e)
-                    context.sio.emit("task_creation_failed", f'Couldn\'t create task. {e}')
+                    context.sio.emit("task_creation", {"ok":False, "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'})
         except Exception as e:
-            context.sio.emit("task_creation_failed", f'Couldn\'t create task. {e}')
+            log.error('Error occurred in task creation event. %s', e)
+            context.sio.emit("task_creation", {"ok":False, "msg": f'Couldn\'t create task for {Event.integration_name} with {payload["id"]}. {e}'})
