@@ -37,6 +37,7 @@ class Module(module.ModuleModel):
         self.descriptor.init_blueprint()
         self.descriptor.init_slots()
         self.descriptor.init_rpcs()
+        self.descriptor.init_events()        
 
         # # Register template slot callback
         # self.context.slot_manager.register_callback(f"integration_card_{self.descriptor.name}", render_integration_card)
