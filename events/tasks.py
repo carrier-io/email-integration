@@ -18,6 +18,7 @@
 """ Slot """
 import json
 from random import random
+from typing import Optional
 
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
@@ -38,14 +39,10 @@ class Event:  # pylint: disable=E1101,R0903
     def _tmp_fail_odd(num: int):
         if num % 2 != 0:
             sleep(5)
-            raise Exception('Custom message here')
+            raise Exception('Custom message here. Host cannot be odd')
 
     @staticmethod
     def _prepare_task(integration_data: dict) -> dict:
-        # integration_data['settings'].pop('email_notification_args', None)
-        # integration_data['settings']['galloper_url'] = '{{secret.galloper_url}}'
-        # integration_data['settings']['token'] = '{{secret.auth_token}}'
-        # integration_data['settings']['project_id'] = integration_data["project_id"]
         env_vars = TaskSettingsModel.parse_obj({
             **integration_data['settings'],
             'project_id': integration_data["project_id"]
@@ -89,8 +86,8 @@ class Event:  # pylint: disable=E1101,R0903
                 )
                 # self.context.rpc_manager.call.integrations_update_attrs(payload['id'], {'status': 'pending'})
 
-                context.sio.emit("task_creation", {
-                    "ok": True,
+                context.sio.emit('task_creation', {
+                    'ok': True,
                     **updated_data
                 })
             except Exception as e:
@@ -102,8 +99,8 @@ class Event:  # pylint: disable=E1101,R0903
                 )
                 log.error('Couldn\'t create task. %s', e)
                 context.sio.emit("task_creation", {
-                    "ok": False,
-                    "msg": f'Couldn\'t create task for {updated_data["name"]} with {updated_data["id"]}. {e}',
+                    'ok': False,
+                    'msg': f'Couldn\'t create task for {updated_data["name"]} with id: {updated_data["id"]}. {e}',
                     **updated_data
                 })
         else:  # task already created
@@ -114,7 +111,8 @@ class Event:  # pylint: disable=E1101,R0903
                 env_vars=updated_env_vars,
                 rewrite=True
             )
-            context.sio.emit("task_creation", {
-                "ok": True,
+            context.sio.emit('task_creation', {
+                'ok': True,
+                'msg': 'Email task updated'
             })
 
