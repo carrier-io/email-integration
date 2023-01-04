@@ -58,3 +58,9 @@ class PerformanceBackendTestModel(SecurityTestModel):
 
 class PerformanceUiTestModel(SecurityTestModel):
     ...
+
+
+class TaskSettingsModel(IntegrationModel):
+    galloper_url: str = '{{secret.galloper_url}}'
+    token: str = '{{secret.auth_token}}'
+    project_id: int
