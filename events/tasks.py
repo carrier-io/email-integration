@@ -55,7 +55,6 @@ class Event:  # pylint: disable=E1101,R0903
             'region': 'default'
         }
 
-
     @web.event(f"{integration_name}_created_or_updated")
     def _created_or_updated(self, context, event, payload):
         project = context.rpc_manager.call.project_get_or_404(project_id=payload["project_id"])
@@ -115,4 +114,3 @@ class Event:  # pylint: disable=E1101,R0903
                 'ok': True,
                 'msg': 'Email task updated'
             })
-
