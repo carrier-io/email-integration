@@ -24,9 +24,9 @@ const EmailIntegrationModal = {
     >
         <template #body>
             <div class="form-group">
-                <div class="d-flex">
+                <div class="d-flex mb-3">
                     <div class="col-8 p-0 mr-1">
-                        <p class="font-h5 font-semibold">Host</p>
+                        <p class="font-h5 font-semibold mb-1">Host</p>
                         <input type="text" v-model="host" class="form-control form-control-alternative"
                                placeholder="SMTP host"
                                :class="{ 'is-invalid': error.host }">
@@ -34,7 +34,7 @@ const EmailIntegrationModal = {
                     </div>
                     
                     <div class="col">
-                       <p class="font-h5 font-semibold">Port</p>
+                       <p class="font-h5 font-semibold mb-1">Port</p>
                         <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
                                v-model="port"
                                :class="{ 'is-invalid': error.port }"
@@ -44,16 +44,16 @@ const EmailIntegrationModal = {
                 </div>
                 
         
-                <div>
-                    <p class="font-h5 font-semibold">User</p>
+                <div class="mb-3">
+                    <p class="font-h5 font-semibold mb-1">User</p>
                     <input type="text" class="form-control form-control-alternative"
                            v-model="user"
                            placeholder="SMTP user"
                            :class="{ 'is-invalid': error.user }">
                     <div class="invalid-feedback">[[ error.user ]]</div>
                 </div>
-                <div>
-                    <p class="font-h5 font-semibold">Password</p>
+                <div class="mb-3">
+                    <p class="font-h5 font-semibold mb-1">Password</p>
                     <SecretFieldInput
                         v-model="passwd"
                         placeholder="SMTP password"
@@ -61,19 +61,15 @@ const EmailIntegrationModal = {
                     <div v-show="error.passwd" class="invalid-feedback" style="display: block">[[ error.passwd ]]</div>
                 </div>
                 
-                <p class="font-h5 font-semibold">Sender</p>
-                <p>
-                    <h13>Optional. By default emails are sent from SMTP user</h13>
-                </p>
+                <p class="font-h5 font-semibold">Sender<span class="text-gray-600 font-h6 font-weight-400 ml-1">(optional)</span></p>
+                <p class="font-h6 font-weight-400 mb-2">By default emails are sent from SMTP user</p>
                 <input type="text" class="form-control form-control-alternative"
                        v-model="sender"
                        placeholder="Email sender"
                        :class="{ 'is-invalid': error.sender }">
                 <div class="invalid-feedback">[[ error.sender ]]</div>
-                <p class="font-h5 font-semibold">Email template</p>
-                <p>
-                    <h13>You may edit template or upload new one instead</h13>
-                </p>
+                <p class="font-h5 font-semibold mt-3">Email template <span class="text-gray-600 font-h6 font-weight-400">(optional)</span></p>
+                <p class="font-h6 font-weight-400 mb-2">You may edit template or upload new one instead</p>
                 <div class="form-group">
 
                     <p v-if="fileName">
@@ -84,9 +80,9 @@ const EmailIntegrationModal = {
                               @drop.prevent="handleDrop"
                               :style="modal_style"
                     ></textarea>
-                    <label class="mt-1">
-                        <span class="btn btn-secondary btn-sm mr-1 d-inline-block">Upload template</span>
-                        <h13>Or drag and drop .html file in the template area</h13>
+                    <label class="mt-2.5">
+                        <span class="btn btn-secondary btn-sm mr-2 d-inline-block">Upload template</span>
+                        <span class="font-h5 text-gray-700">Or drag and drop .html file in the template area</span>
                         <input type="file" accept="text/html" class="form-control form-control-alternative"
                                style="display: none"
                                @change="handleInputFile"
