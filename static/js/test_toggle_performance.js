@@ -3,15 +3,15 @@ const EmailRecipient = {
     emits: ['remove'],
     delimiters: ['[[', ']]'],
     template: `
-        <li class="list-group-item d-inline-flex justify-content-between p-1">
-            <h13>[[ email ]]</h13>
+        <li class="list-group-item d-inline-flex justify-content-between py-2 pr-2 pl-3 border-0">
+            <p class="font-h5 font-weight-400">[[ email ]]</p>
             <button
                 type="button"
-                class="btn btn-action btn-24"
+                class="btn btn-default btn-xs btn-icon__xs mr-2"
                 title="remove"
                 @click.prevent="remove"
             >
-                <i class="fa fa-times"></i>
+                <i class="icon__16x16 icon-close__16"></i>
             </button>
         </li>
     `,
@@ -96,23 +96,21 @@ const EmailIntegration = {
     },
     template: `
         <div class="mt-3">
-            <h9>Recipients</h9>
-            <div class="input-group">
-                <input type="email" class="form-control" placeholder="Recipients' emails comma-separated"
+            <p class="font-h5 font-semibold">Recipients</p>
+            <div class="input-group d-flex mt-1">
+                <div class="custom-input flex-grow-1">
+                    <input type="email" placeholder="Recipients' emails comma-separated"
                        v-model="email"
                        :class="{ 'is-invalid': hasErrors }"
                 >
-                <div class="input-group-append">
-                    <button class="btn btn-secondary btn-37" type="button"
-                            style="max-width: unset"
-                            @click="handleAdd"
-                            :disabled="email === ''"
-                            :class="{ 'btn-danger': hasErrors }"
-                    >
-                        Add
-                    </button>
                 </div>
-    
+                <button class="btn btn-lg btn-secondary ml-2" type="button"
+                    @click="handleAdd"
+                    :disabled="email === ''"
+                    :class="{ 'btn-danger': hasErrors }"
+                >
+                    Add
+                </button>
             </div>
             <div class="invalid-feedback"
                  style="display: block"
@@ -125,7 +123,7 @@ const EmailIntegration = {
                     [[ warning ]]
                 </div>
             </div>
-            <ul class="list-group mt-1 list-group-flush">
+            <ul class="list-group list-group-flush border rounded mt-2" v-if="recipients.length > 0" style="max-height: 170px; overflow-y: scroll">
                 <EmailRecipient
                         v-for="(item, index) in recipients"
                         :key="index"
