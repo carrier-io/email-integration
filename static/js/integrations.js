@@ -24,25 +24,22 @@ const EmailIntegrationModal = {
     >
         <template #body>
             <div class="form-group">
-                <div class="d-flex mb-3">
-                    <div class="col-8 p-0 mr-1">
-                        <p class="font-h5 font-semibold mb-1">Host</p>
-                        <input type="text" v-model="host" class="form-control form-control-alternative"
-                               placeholder="SMTP host"
-                               :class="{ 'is-invalid': error.host }">
-                        <div class="invalid-feedback">[[ error.host ]]</div>
-                    </div>
-                    
-                    <div class="col">
-                       <p class="font-h5 font-semibold mb-1">Port</p>
-                        <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
-                               v-model="port"
-                               :class="{ 'is-invalid': error.port }"
-                        >
-                        <div class="invalid-feedback">[[ error.port ]]</div>
-                    </div>
+                <div class="mb-3">
+                    <p class="font-h5 font-semibold mb-1">Host</p>
+                    <input type="text" v-model="host" class="form-control form-control-alternative"
+                           placeholder="SMTP host"
+                           :class="{ 'is-invalid': error.host }">
+                    <div class="invalid-feedback">[[ error.host ]]</div>
                 </div>
                 
+                <div class="mb-3">
+                    <p class="font-h5 font-semibold mb-1">Port</p>
+                    <input type="number" class="form-control form-control-alternative" placeholder="SMTP port"
+                           v-model="port"
+                           :class="{ 'is-invalid': error.port }"
+                    >
+                    <div class="invalid-feedback">[[ error.port ]]</div>
+                </div>
         
                 <div class="mb-3">
                     <p class="font-h5 font-semibold mb-1">User</p>
@@ -70,6 +67,7 @@ const EmailIntegrationModal = {
                 <div class="invalid-feedback">[[ error.sender ]]</div>
                 <p class="font-h5 font-semibold mt-3">Email template <span class="text-gray-600 font-h6 font-weight-400">(optional)</span></p>
                 <p class="font-h6 font-weight-400 mb-2">You may edit template or upload new one instead</p>
+                <p class="font-h5 font-weight-400">Default template</p>
                 <div class="form-group">
 
                     <p v-if="fileName">
@@ -81,7 +79,7 @@ const EmailIntegrationModal = {
                               :style="modal_style"
                     ></textarea>
                     <label class="mt-2.5">
-                        <span class="btn btn-secondary btn-sm mr-2 d-inline-block">Upload template</span>
+                        <span class="btn btn-secondary btn-sm mr-3 d-inline-block">Upload template</span>
                         <span class="font-h5 text-gray-700">Or drag and drop .html file in the template area</span>
                         <input type="file" accept="text/html" class="form-control form-control-alternative"
                                style="display: none"
@@ -104,7 +102,6 @@ const EmailIntegrationModal = {
             >
             </test-connection-button>
         </template>
-
     </ModalDialog>
 </div>
     `,
