@@ -66,7 +66,7 @@ class Event:  # pylint: disable=E1101,R0903
                 return_result=False
             )
             try:
-                Event._tmp_fail_odd(payload['settings']['port'])  # todo: remove
+                #Event._tmp_fail_odd(payload['settings']['port'])  # todo: remove
                 email_task = task_tools.create_task(
                     project,
                     data_tools.files.File(constants.EMAIL_NOTIFICATION_PATH),
