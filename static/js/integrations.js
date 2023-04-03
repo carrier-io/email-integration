@@ -94,7 +94,7 @@ const EmailIntegrationModal = {
         </template>
         <template #footer>
             <test-connection-button
-                    :apiPath="api_base + 'check_settings/' + pluginName"
+                    :apiPath="this.$root.build_api_url('integrations', 'check_settings') + '/' + pluginName"
                     :error="error.check_connection"
                     :body_data="body_data"
                     v-model:is_fetching="is_fetching"
@@ -114,9 +114,6 @@ const EmailIntegrationModal = {
         })
     },
     computed: {
-        apiPath() {
-            return this.api_base + 'integration/'
-        },
         project_id() {
             // return getSelectedProjectId()
             return this.$root.project_id
@@ -132,9 +129,10 @@ const EmailIntegrationModal = {
                 is_default,
                 project_id,
                 base64Template: template,
-                status
+                status,
+                mode
             } = this
-            return {host, port, user, passwd, sender, description, is_default, project_id, template, status}
+            return {host, port, user, passwd, sender, description, is_default, project_id, template, status, mode}
         },
         base64Template() {
             return btoa(this.template)
@@ -164,6 +162,10 @@ const EmailIntegrationModal = {
             this.load({id})
             this.delete()
         },
+        handleSetDefault(id) {
+            this.load({id})
+            this.set_default()
+        },
         handleError(error_data) {
             error_data.forEach(item => {
                 this.error = {[item.loc[0]]: item.msg}
@@ -172,7 +174,7 @@ const EmailIntegrationModal = {
         async create() {
             this.is_fetching = true
             try {
-                const resp = await fetch(this.apiPath + this.pluginName, {
+                const resp = await fetch(this.api_url + this.pluginName, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.body_data)
@@ -200,7 +202,7 @@ const EmailIntegrationModal = {
         async update() {
             this.is_fetching = true
             try {
-                const resp = await fetch(this.apiPath + this.id, {
+                const resp = await fetch(this.api_url + this.id, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.body_data)
@@ -225,7 +227,7 @@ const EmailIntegrationModal = {
         async delete() {
             this.is_fetching = true
             try {
-                const resp = await fetch(this.apiPath + this.id, {
+                const resp = await fetch(this.api_url + this.id, {
                     method: 'DELETE',
                 })
                 if (resp.ok) {
@@ -248,6 +250,26 @@ const EmailIntegrationModal = {
             } catch (e) {
                 console.error(e)
                 showNotify('ERROR', 'Error deleting reporter email')
+            } finally {
+                this.is_fetching = false
+            }
+        },
+        async set_default() {
+            console.log('we are here')
+            this.is_fetching = true
+            try {
+                const resp = await fetch(this.api_url + this.id, {
+                    method: 'PATCH',
+                })
+                if (resp.ok) {
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
+                } else {
+                    const error_data = await resp.json()
+                    this.handleError(error_data)
+                }
+            } catch (e) {
+                console.error(e)
+                showNotify('ERROR', 'Error setting as default')
             } finally {
                 this.is_fetching = false
             }
@@ -309,8 +331,8 @@ const EmailIntegrationModal = {
             fileName: '',
             pluginName: 'reporter_email',
             status: integration_status.pending,
-
-            api_base: '/api/v1/integrations/',
+            api_url: V.build_api_url('integrations', 'integration') + '/',
+            mode: V.mode
         })
     }
 }
