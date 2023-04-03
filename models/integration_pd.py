@@ -1,6 +1,6 @@
 import binascii
-from smtplib import SMTP
-from typing import Optional, List
+import smtplib
+from typing import Optional, List, Union
 
 from pydantic import BaseModel, EmailStr
 from pydantic.class_validators import validator
@@ -8,6 +8,8 @@ from pydantic.fields import ModelField
 from pylon.core.tools import log
 
 import base64
+
+from ...integrations.models.pd.integration import SecretField
 
 
 class IntegrationModel(BaseModel):
@@ -17,15 +19,16 @@ class IntegrationModel(BaseModel):
     host: str
     port: int
     user: str
-    passwd: str
+    passwd: Union[SecretField, str]
     sender: Optional[str]
     template: Optional[str] = _default_template
 
     def check_connection(self) -> bool:
+        from tools import session_project
         try:
-            smtp = SMTP(self.host, self.port)
-            smtp.login(self.user, self.passwd)
-            smtp.quit()
+            with smtplib.SMTP_SSL(host=self.host, port=self.port) as server:
+                server.ehlo()
+                server.login(self.user, self.passwd.unsecret(session_project.get()))
             return True
         except Exception as e:
             log.exception(e)
@@ -47,3 +50,17 @@ class IntegrationModel(BaseModel):
 class SecurityTestModel(BaseModel):
     id: int
     recipients: List[EmailStr]
+
+
+class PerformanceBackendTestModel(SecurityTestModel):
+    ...
+
+
+class PerformanceUiTestModel(SecurityTestModel):
+    ...
+
+
+class TaskSettingsModel(IntegrationModel):
+    galloper_url: str = '{{secret.galloper_url}}'
+    token: str = '{{secret.auth_token}}'
+    project_id: int

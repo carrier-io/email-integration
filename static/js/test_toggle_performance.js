@@ -100,14 +100,14 @@ const EmailIntegration = {
             <div class="input-group d-flex mt-1">
                 <div class="custom-input flex-grow-1">
                     <input type="email" placeholder="Recipients' emails comma-separated"
-                           v-model="email"
-                           :class="{ 'is-invalid': hasErrors }"
-                    >
-                    </div>
+                       v-model="email"
+                       :class="{ 'is-invalid': hasErrors }"
+                >
+                </div>
                 <button class="btn btn-lg btn-secondary ml-2" type="button"
-                        @click="handleAdd"
-                        :disabled="email === ''"
-                        :class="{ 'btn-danger': hasErrors }"
+                    @click="handleAdd"
+                    :disabled="email === ''"
+                    :class="{ 'btn-danger': hasErrors }"
                 >
                     Add
                 </button>
