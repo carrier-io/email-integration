@@ -22,7 +22,7 @@ from typing import Optional
 
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
-from tools import task_tools, data_tools, constants
+from tools import TaskManager, data_tools, constants
 from time import sleep
 
 from pydantic import BaseModel
@@ -34,12 +34,6 @@ class Event:  # pylint: disable=E1101,R0903
         Event Resource
     """
     integration_name = "reporter_email"
-
-    @staticmethod
-    def _tmp_fail_odd(num: int):
-        if num % 2 != 0:
-            sleep(5)
-            raise Exception('Custom message here. Host cannot be odd')
 
     @staticmethod
     def _prepare_task(integration_data: dict) -> dict:
@@ -66,10 +60,8 @@ class Event:  # pylint: disable=E1101,R0903
                 return_result=False
             )
             try:
-                #Event._tmp_fail_odd(payload['settings']['port'])  # todo: remove
-                email_task = task_tools.create_task(
-                    project,
-                    data_tools.files.File(constants.EMAIL_NOTIFICATION_PATH),
+                email_task = TaskManager(project.id).create_task(
+                    constants.EMAIL_NOTIFICATION_PATH,
                     Event._prepare_task(payload),
                 )
                 log.info('reporter task id %s', email_task.task_id)
@@ -105,7 +97,6 @@ class Event:  # pylint: disable=E1101,R0903
         else:  # task already created
             updated_env_vars = Event._prepare_task(payload)['env_vars']
             context.rpc_manager.call.tasks_update_env(
-                project_id=project.id,
                 task_id=payload['task_id'],
                 env_vars=updated_env_vars,
                 rewrite=True
