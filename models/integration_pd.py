@@ -23,12 +23,13 @@ class IntegrationModel(BaseModel):
     sender: Optional[str]
     template: Optional[str] = _default_template
 
-    def check_connection(self) -> bool:
+    def check_connection(self, **kwargs) -> bool:
         from tools import session_project
+        project_id = kwargs.get('project_id', session_project.get())
         try:
             with smtplib.SMTP_SSL(host=self.host, port=self.port) as server:
                 server.ehlo()
-                server.login(self.user, self.passwd.unsecret(session_project.get()))
+                server.login(self.user, self.passwd.unsecret(project_id))
             return True
         except Exception as e:
             log.exception(e)
