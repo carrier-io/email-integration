@@ -33,7 +33,7 @@ class Event:
             )
             try:
                 email_task = TaskManager(project.id).create_task(
-                    constants.EMAIL_NOTIFICATION_PATH,
+                    self.descriptor.config['task_path'],
                     Event._prepare_task(payload),
                 )
                 log.info('reporter task id %s', email_task.task_id)
