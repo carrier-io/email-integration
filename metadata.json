@@ -1,6 +1,6 @@
 {
   "name": "Carrier Reporter Email Plugin",
-  "version": "0.3",
+  "version": "0.4",
   "module": "plugins.reporter_email",
   "extract": false,
   "depends_on": ["integrations", "tasks"],
