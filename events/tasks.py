@@ -28,6 +28,7 @@ class Event:
         if not payload['task_id']:
             context.rpc_manager.call.integrations_update_attrs(
                 integration_id=payload['id'],
+                project_id=payload["project_id"],
                 update_dict={'status': 'pending'},
                 return_result=False
             )
@@ -44,6 +45,7 @@ class Event:
                 # )
                 updated_data = context.rpc_manager.call.integrations_update_attrs(
                     integration_id=payload['id'],
+                    project_id=payload["project_id"],
                     update_dict={'status': 'success', 'task_id': email_task.task_id},
                     return_result=True
                 )
@@ -57,6 +59,7 @@ class Event:
                 # updated_data = self.context.rpc_manager.call.integrations_set_task_id(payload['id'], None, 'error')
                 updated_data = context.rpc_manager.call.integrations_update_attrs(
                     integration_id=payload['id'],
+                    project_id=payload["project_id"],
                     update_dict={'status': str(e)},
                     return_result=True
                 )
