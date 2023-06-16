@@ -13,7 +13,8 @@ class RPC:
 
     @web.rpc(f'backend_performance_test_create_integration_validate_{integration_name}')
     @rpc_tools.wrap_exceptions(ValidationError)
-    def backend_performance_test_create_integration_validate(self, data: dict, pd_kwargs: Optional[dict] = None, **kwargs) -> dict:
+    def backend_performance_test_create_integration_validate(self, data: dict, project_id: int, 
+            pd_kwargs: Optional[dict] = None, **kwargs) -> dict:
         if not pd_kwargs:
             pd_kwargs = {}
         pd_object = PerformanceBackendTestModel(**data)
@@ -32,9 +33,8 @@ class RPC:
 
     @web.rpc(f'ui_performance_test_create_integration_validate_{integration_name}')
     @rpc_tools.wrap_exceptions(ValidationError)
-    def ui_performance_test_create_integration_validate(self, data: dict, 
-                                                        pd_kwargs: Optional[dict] = None, 
-                                                        **kwargs) -> dict:
+    def ui_performance_test_create_integration_validate(self, data: dict, project_id: int,
+            pd_kwargs: Optional[dict] = None, **kwargs) -> dict:
         if not pd_kwargs:
             pd_kwargs = {}
         pd_object = PerformanceUiTestModel(**data)
