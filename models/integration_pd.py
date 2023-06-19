@@ -51,6 +51,7 @@ class IntegrationModel(BaseModel):
 class SecurityTestModel(BaseModel):
     id: int
     recipients: List[EmailStr]
+    is_local: bool
 
 
 class PerformanceBackendTestModel(SecurityTestModel):
