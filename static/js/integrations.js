@@ -15,6 +15,7 @@ const EmailIntegrationModal = {
     <ModalDialog
             v-model:name="config.name"
             v-model:is_default="is_default"
+            v-model:is_shared="config.is_shared"
             @update="update"
             @create="create"
             :display_name="display_name"
@@ -265,7 +266,7 @@ const EmailIntegrationModal = {
         async set_default(local) {
             this.is_fetching = true
             try {
-                const resp = await fetch(this.api_url + this.id, {
+                const resp = await fetch(this.api_url + this.project_id + '/' + this.id, {
                     method: 'PATCH',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({local})
