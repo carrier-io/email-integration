@@ -27,7 +27,7 @@ const EmailIntegration = {
     components: {
         EmailRecipient
     },
-    props: ['instance_name', 'section', 'selected_integration', 'is_selected'],
+    props: ['instance_name', 'section', 'selected_integration', 'is_selected', 'integration_data'],
     emits: ['set_data', 'clear_data'],
     data() {
         return this.initialState()
@@ -36,18 +36,21 @@ const EmailIntegration = {
         hasErrors() {
             return this.errors.length + this.warnings.length > 0
         },
+        is_local() {
+            return !!(this.integration_data.project_id)
+        },
     },
     methods: {
         get_data() {
             if (this.is_selected) {
-                const {selected_integration: id, recipients} = this
-                return {id, recipients}
+                const {selected_integration: id, is_local, recipients} = this
+                return {id, is_local, recipients}
             }
         },
         set_data(data) {
-            const {id, recipients} = data
+            const {id, is_local, recipients} = data
             this.recipients = recipients
-            this.$emit('set_data', {id})
+            this.$emit('set_data', {id, is_local})
         },
         clear_data() {
             Object.assign(this.$data, this.initialState())

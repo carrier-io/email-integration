@@ -1,4 +1,5 @@
 from pylon.core.tools import log, web
+from tools import auth, theme
 
 
 class Slot:
@@ -6,6 +7,7 @@ class Slot:
     section_name = 'reporters'
 
     @web.slot(f'backend_performance_{section_name}_content')
+    # @auth.decorators.check_slot(["configuration.integrations.integrations.reporter_email"])
     def backend_toggle_content(self, context, slot, payload):
         if payload is None:
             payload = {}

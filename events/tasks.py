@@ -1,5 +1,5 @@
 from pylon.core.tools import log, web
-from tools import TaskManager, data_tools, constants
+from tools import TaskManager, data_tools, constants, rpc_tools
 
 from ..models.integration_pd import TaskSettingsModel
 
@@ -13,12 +13,20 @@ class Event:
             **integration_data['settings'],
             'project_id': integration_data["project_id"]
         })
+        rpc = rpc_tools.RpcMixin().rpc
+        default_integration = rpc.call.integrations_get_defaults(
+            project_id=integration_data.get("project_id"), name='s3_integration'
+        )
+        integration_id = default_integration.integration_id if default_integration else 1
+        is_local = bool(default_integration.project_id) if default_integration else False        
+
         return {
             'funcname': f'email_integration_{integration_data["id"]}',
             'invoke_func': 'lambda_function.lambda_handler',
             'runtime': 'Python 3.7',
-            'env_vars': env_vars.json(),
-            'region': 'default'
+            'env_vars': env_vars.json(exclude_none=True),
+            'region': 'default',
+            's3_settings': {'integration_id': integration_id, 'is_local': is_local}
         }
 
     @web.event(f"{integration_name}_created_or_updated")
@@ -28,6 +36,7 @@ class Event:
         if not payload['task_id']:
             context.rpc_manager.call.integrations_update_attrs(
                 integration_id=payload['id'],
+                project_id=payload["project_id"],
                 update_dict={'status': 'pending'},
                 return_result=False
             )
@@ -44,6 +53,7 @@ class Event:
                 # )
                 updated_data = context.rpc_manager.call.integrations_update_attrs(
                     integration_id=payload['id'],
+                    project_id=payload["project_id"],
                     update_dict={'status': 'success', 'task_id': email_task.task_id},
                     return_result=True
                 )
@@ -57,6 +67,7 @@ class Event:
                 # updated_data = self.context.rpc_manager.call.integrations_set_task_id(payload['id'], None, 'error')
                 updated_data = context.rpc_manager.call.integrations_update_attrs(
                     integration_id=payload['id'],
+                    project_id=payload["project_id"],
                     update_dict={'status': str(e)},
                     return_result=True
                 )
