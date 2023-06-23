@@ -52,6 +52,7 @@ class SecurityTestModel(BaseModel):
     id: int
     recipients: List[EmailStr]
     is_local: bool
+    project_id: Optional[int]
 
 
 class PerformanceBackendTestModel(SecurityTestModel):

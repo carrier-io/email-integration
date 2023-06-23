@@ -9,16 +9,23 @@ class Event:
 
     @staticmethod
     def _prepare_task(integration_data: dict) -> dict:
+        log.info('prepare task %s', integration_data)
         env_vars = TaskSettingsModel.parse_obj({
             **integration_data['settings'],
-            'project_id': integration_data["project_id"]
+            'project_id': integration_data.get("project_id")
         })
         rpc = rpc_tools.RpcMixin().rpc
-        default_integration = rpc.call.integrations_get_defaults(
-            project_id=integration_data.get("project_id"), name='s3_integration'
-        )
-        integration_id = default_integration.integration_id if default_integration else 1
-        is_local = bool(default_integration.project_id) if default_integration else False        
+        if integration_data.get("project_id"):
+            default_integration = rpc.call.integrations_get_defaults(
+                project_id=integration_data.get("project_id"), name='s3_integration'
+            )
+            integration_id = default_integration.integration_id if default_integration else 1
+        else:
+            default_integration = rpc.call.integrations_get_admin_defaults(
+                name='s3_integration'
+            )
+            integration_id = default_integration.id if default_integration else 1    
+        is_local = bool(default_integration.project_id) if default_integration else False       
 
         return {
             'funcname': f'email_integration_{integration_data["id"]}',
