@@ -18,8 +18,9 @@ class RPC:
         log.info("Test params: %s", test_params)
         log.info("Scanner params: %s", scanner_params)
 
-        integration = self.context.rpc_manager.call.integrations_get_by_id(test_params['project_id'], 
-                                                                           scanner_params['id'])
+        integration = self.context.rpc_manager.call.integrations_get_by_id(
+            scanner_params.get('project_id'), scanner_params['id']
+        )
         result = integration.settings
         result['recipients'] = scanner_params['recipients']
 

@@ -44,7 +44,7 @@ const EmailIntegration = {
         get_data() {
             if (this.is_selected) {
                 const {selected_integration: id, is_local, recipients} = this
-                return {id, is_local, recipients}
+                return {id, is_local, project_id: this.integration_data.project_id, recipients}
             }
         },
         set_data(data) {
