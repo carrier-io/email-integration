@@ -126,7 +126,7 @@ const EmailIntegration = {
                     [[ warning ]]
                 </div>
             </div>
-            <ul class="list-group list-group-flush border rounded mt-2" v-if="recipients.length > 0" style="max-height: 170px; overflow-y: scroll">
+            <ul class="list-group list-group-flush border rounded mt-2" v-if="recipients.length > 0" style="max-height: 170px; overflow-y: auto">
                 <EmailRecipient
                         v-for="(item, index) in recipients"
                         :key="index"
